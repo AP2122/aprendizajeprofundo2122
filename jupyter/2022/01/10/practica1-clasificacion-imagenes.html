@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Fastpages Notebook Blog Post | fastpages</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Fastpages Notebook Blog Post" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="A tutorial of fastpages for Jupyter notebooks." />
+<meta property="og:description" content="A tutorial of fastpages for Jupyter notebooks." />
+<link rel="canonical" href="https://ap2122.github.io/aprendizajeprofundo2122/jupyter/2022/01/10/practica1-clasificacion-imagenes.html" />
+<meta property="og:url" content="https://ap2122.github.io/aprendizajeprofundo2122/jupyter/2022/01/10/practica1-clasificacion-imagenes.html" />
+<meta property="og:site_name" content="fastpages" />
+<meta property="og:image" content="https://ap2122.github.io/aprendizajeprofundo2122/images/chart-preview.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2022-01-10T00:00:00-06:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://ap2122.github.io/aprendizajeprofundo2122/images/chart-preview.png" />
+<meta property="twitter:title" content="Fastpages Notebook Blog Post" />
+<script type="application/ld+json">
+{"url":"https://ap2122.github.io/aprendizajeprofundo2122/jupyter/2022/01/10/practica1-clasificacion-imagenes.html","@type":"BlogPosting","headline":"Fastpages Notebook Blog Post","dateModified":"2022-01-10T00:00:00-06:00","datePublished":"2022-01-10T00:00:00-06:00","image":"https://ap2122.github.io/aprendizajeprofundo2122/images/chart-preview.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://ap2122.github.io/aprendizajeprofundo2122/jupyter/2022/01/10/practica1-clasificacion-imagenes.html"},"description":"A tutorial of fastpages for Jupyter notebooks.","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/aprendizajeprofundo2122/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://ap2122.github.io/aprendizajeprofundo2122/feed.xml" title="fastpages" /><link rel="shortcut icon" type="image/x-icon" href="/aprendizajeprofundo2122/images/favicon.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head>
+<body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/aprendizajeprofundo2122/">fastpages</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/aprendizajeprofundo2122/about/">About Me</a><a class="page-link" href="/aprendizajeprofundo2122/search/">Search</a><a class="page-link" href="/aprendizajeprofundo2122/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Fastpages Notebook Blog Post</h1><p class="page-description">A tutorial of fastpages for Jupyter notebooks.</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2022-01-10T00:00:00-06:00" itemprop="datePublished">
+        Jan 10, 2022
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      11 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/aprendizajeprofundo2122/categories/#jupyter">jupyter</a>
+        
+      
+      </p>
+    
+
+    
+      
+        <div class="pb-5 d-flex flex-justify-center">
+          <div class="px-2">
+
+    <a href="https://github.com/AP2122/aprendizajeprofundo2122/tree/master/_notebooks/2022-01-10-practica1-clasificacion-imagenes.ipynb" role="button" target="_blank">
+<img class="notebook-badge-image" src="/aprendizajeprofundo2122/assets/badges/github.svg" alt="View On GitHub">
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://mybinder.org/v2/gh/AP2122/aprendizajeprofundo2122/master?filepath=_notebooks%2F2022-01-10-practica1-clasificacion-imagenes.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/aprendizajeprofundo2122/assets/badges/binder.svg" alt="Open In Binder"/>
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://colab.research.google.com/github/AP2122/aprendizajeprofundo2122/blob/master/_notebooks/2022-01-10-practica1-clasificacion-imagenes.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/aprendizajeprofundo2122/assets/badges/colab.svg" alt="Open In Colab"/>
+    </a>
+</div>
+          <div class="px-2">
+  <a href="https://deepnote.com/launch?url=https%3A%2F%2Fgithub.com%2FAP2122%2Faprendizajeprofundo2122%2Fblob%2Fmaster%2F_notebooks%2F2022-01-10-practica1-clasificacion-imagenes.ipynb" target="_blank">
+      <img class="notebook-badge-image" src="/aprendizajeprofundo2122/assets/badges/deepnote.svg" alt="Launch in Deepnote"/>
+  </a>
+</div>
+
+        </div>
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h2"><a href="#Librerías">Librerías </a></li>
+<li class="toc-entry toc-h2"><a href="#Dataset">Dataset </a></li>
+<li class="toc-entry toc-h2"><a href="#Cargando-el-dataset">Cargando el dataset </a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#Datablock">Datablock </a></li>
+<li class="toc-entry toc-h3"><a href="#Preescalado-(presizing)">Preescalado (presizing) </a></li>
+<li class="toc-entry toc-h3"><a href="#Data-augmentation">Data augmentation </a></li>
+<li class="toc-entry toc-h3"><a href="#Dataloader">Dataloader </a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#Entrenando-el-modelo">Entrenando el modelo </a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#Callbacks">Callbacks </a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#Construyendo-el-modelo">Construyendo el modelo </a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#Learning-rate-finder">Learning rate finder </a></li>
+<li class="toc-entry toc-h3"><a href="#Fine-tuning">Fine-tuning </a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#Evaluando-el-modelo">Evaluando el modelo </a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#Evaluando-el-modelo-en-el-conjunto-de-test">Evaluando el modelo en el conjunto de test </a></li>
+<li class="toc-entry toc-h3"><a href="#Interpretación-del-modelo">Interpretación del modelo </a></li>
+<li class="toc-entry toc-h3"><a href="#Usando-el-modelo">Usando el modelo </a></li>
+</ul>
+</li>
+</ul><!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2022-01-10-practica1-clasificacion-imagenes.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>En este notebook se muestra cómo crear un modelo de clasificación de imágenes utilizando las técnicas vistas en clase. A lo largo del notebook aparecen una serie de preguntas que debes responder.</p>
+<p>Para crear nuestro clasificador de imágenes vamos a utilizar la librería <a href="https://www.fast.ai/">fastAI</a>. Este notebook está inspirado en el curso asociado a dicha librería.</p>
+<p>En esta práctica vamos a hacer un uso intensivo de la GPU, así que es importante activar su uso desde la opción Configuración del cuaderno del menú Editar (esta opción debería estar habilitada por defecto, pero es recomendable que lo compruebes).</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Librerías">
+<a class="anchor" href="#Librer%C3%ADas" aria-hidden="true"><span class="octicon octicon-link"></span></a>Librerías<a class="anchor-link" href="#Librer%C3%ADas"> </a>
+</h2>
+<p>Comenzamos descargando la última versión de la librería FastAI. Al finalizar la instalación se reiniciará el kernel de manera automática.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">!</span>pip install fastai --upgrade
+<span class="kn">import</span> <span class="nn">IPython</span>
+<span class="n">IPython</span><span class="o">.</span><span class="n">Application</span><span class="o">.</span><span class="n">instance</span><span class="p">()</span><span class="o">.</span><span class="n">kernel</span><span class="o">.</span><span class="n">do_shutdown</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>A continuación, cargamos aquellas librerías que son necesarias.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">fastai.vision.all</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Dataset">
+<a class="anchor" href="#Dataset" aria-hidden="true"><span class="octicon octicon-link"></span></a>Dataset<a class="anchor-link" href="#Dataset"> </a>
+</h2>
+<p>Para esta práctica vamos a usar como ejemplo de dataset el <a href="https://www.kaggle.com/puneet6060/intel-image-classification">Intel Image Classification dataset</a>. Este dataset consta de imágenes de tamaño 150x150 distribuidas en 6 categorías (buildings, forest, glacier, mountain, sea, street). Los siguientes comandos descargan y descomprimen dicho dataset.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">!</span>wget https://unirioja-my.sharepoint.com/:u:/g/personal/joheras_unirioja_es/EbMVHqKMSnNHh6I0-4-QWdQBlVDKz2Uz5Ky73zc5tHGofg?download<span class="o">=</span><span class="m">1</span> -O IntelImageClassification.zip
+<span class="o">!</span>unzip IntelImageClassification.zip
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Vamos a explorar el contenido de este dataset. Para ello vamos a crear un objeto <a href="https://docs.python.org/3/library/pathlib.html">Path</a> que apunta al directorio que acabamos de crear.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">'IntelImageClassification/'</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Con el objeto path podemos utilizar funciones como <code>ls()</code>.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">path</span><span class="o">.</span><span class="n">ls</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Vemos que nuestro dataset consta de dos carpetas llamadas <code>train</code> y <code>test</code>. Recordar que es importante hacer la partición del dataset en dos conjuntos distintos, para luego poder evaluarlo correctamente. Podemos ahora crear objetos <code>path</code> que apunten respectivamente a nuestro conjunto de entrenamiento y a nuestro conjunto de test.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">trainPath</span> <span class="o">=</span> <span class="n">path</span><span class="o">/</span><span class="s1">'train'</span>
+<span class="n">testPath</span> <span class="o">=</span> <span class="n">path</span><span class="o">/</span><span class="s1">'test'</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Veamos el contenido de cada uno de estos directorios.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">trainPath</span><span class="o">.</span><span class="n">ls</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">testPath</span><span class="o">.</span><span class="n">ls</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Podemos ver que tanto la carpeta <code>train</code> como la carpeta <code>test</code> contienen 6 subcarpetas, una por cada clase del dataset.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>Ejercicio</strong></p>
+<p>¿Qué contiene la carpeta <code>buildings</code> de la carpeta <code>test</code>? Ejecuta a continuación el comando necesario para comprobarlo.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Cargando-el-dataset">
+<a class="anchor" href="#Cargando-el-dataset" aria-hidden="true"><span class="octicon octicon-link"></span></a>Cargando el dataset<a class="anchor-link" href="#Cargando-el-dataset"> </a>
+</h2>
+<p>A continuación vamos a mostrar cómo se carga el dataset para poder posteriormente crear nuestro modelo. Este proceso se hace en dos pasos. Primero se construye un objeto <code>DataBlock</code> y a continuación se construye un objeto <code>DataLoader</code> a partir del <code>DataBlock</code>. Tienes más información sobre estos objetos en la documentación de <a href="https://docs.fast.ai/tutorial.datablock.html">FastAI</a>.</p>
+<h3 id="Datablock">
+<a class="anchor" href="#Datablock" aria-hidden="true"><span class="octicon octicon-link"></span></a>Datablock<a class="anchor-link" href="#Datablock"> </a>
+</h3>
+<p>Comenzamos construyendo el objeto <code>DataBlock</code>. A continuación explicaremos cada una de sus componentes.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">db</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">ImageBlock</span><span class="p">,</span> <span class="n">CategoryBlock</span><span class="p">),</span>
+                 <span class="n">get_items</span><span class="o">=</span><span class="n">get_image_files</span><span class="p">,</span> 
+                 <span class="n">splitter</span><span class="o">=</span><span class="n">RandomSplitter</span><span class="p">(</span><span class="n">valid_pct</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span><span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">),</span>
+                 <span class="n">get_y</span><span class="o">=</span><span class="n">parent_label</span><span class="p">,</span>
+                 <span class="n">item_tfms</span> <span class="o">=</span> <span class="n">Resize</span><span class="p">(</span><span class="mi">256</span><span class="p">),</span>
+                 <span class="n">batch_tfms</span><span class="o">=</span><span class="n">aug_transforms</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span><span class="n">min_scale</span><span class="o">=</span><span class="mf">0.75</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Vamos a ver las distintas componentes del <code>DataBlock</code>.</p>
+<ul>
+<li>El atributo <code>blocks</code> sirve para indicar el tipo de nuestros datos. Como estamos en un problema de clasificación de imágenes, tenemos que la entrada de nuestro modelo será una imagen, es decir un <code>ImageBlock</code>, y la salida será una categoría, es decir un <code>CategoryBlock</code>. Por lo tanto indicamos que <code>blocks = (ImageBlock, CategoryBlock)</code>.</li>
+<li>El atributo <code>get_items</code> debe proporcionar una función para leer los datos. En nuestro caso queremos leer una serie de imágenes que estarán almacenadas en un <code>path</code>. Para ello usamos la función <code>get_image_files</code>. Puedes ver qué hace exactamente esta función ejecutando el comando <code>??get_image_files</code>.</li>
+<li>El atributo <code>splitter</code> nos indica cómo partir el dataset. Daros cuenta que tenemos un conjunto de entrenamiento y uno de test, pero para entrenar nuestro modelo y probar distintas alternativas nos interesa usar un conjunto de validación, que lo vamos a tomar de forma aleatorea a partir de nuestro conjunto de entrenamiento usando un 20% del mismo. Para ello usaremos el objeto <code>RandomSplitter(valid_pct=0.2,seed=42)</code>.</li>
+<li>El atributo <code>get_y</code> sirve para indicar cómo extraemos la clase a partir de nuestros datos. La función <code>get_image_files</code> nos proporciona una lista con los paths a las imágenes de nuestro dataset. Si nos fijamos en dichos paths, la clase de cada imagen viene dada por la carpeta en la que está contenida, por lo que podemos usar el método <code>parent_label</code> para obtener la clase de la misma. </li>
+</ul>
+<p>Por último, los atributos <code>item_tfms</code> y <code>batch_tfms</code> sirven para aplicar una técnica conocida como <em>preescalado</em> (o <em>presizing</em>).</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Preescalado-(presizing)">
+<a class="anchor" href="#Preescalado-(presizing)" aria-hidden="true"><span class="octicon octicon-link"></span></a>Preescalado (presizing)<a class="anchor-link" href="#Preescalado-(presizing)"> </a>
+</h3>
+<p>El preescalado es una técnica de aumento de datos diseñada para minimizar la destrucción de datos. Para poder sacar el máximo partido a las GPUs, es necesario que todas las imágenes tengan el mismo tamaño, por lo que es común reescalar todas las imágenes al mismo tamaño.</p>
+<p>Sin embargo, hay varias técnicas de aumento que si se aplican después de reescalar pueden introducir zonas vacías o degradar los datos. Por ejemplo, si rotamos una imagen 45 grados, los bordes de la imagen quedan vacíos, lo que no le sirve para nada al modelo. Para solucionar este problema se utiliza la técnica del preescalado que consta de dos pasos.</p>
+<ol>
+<li>Las imágenes se reescalan a una dimensión mayor que la que se usará realmente para entrenar. </li>
+<li>Se aplican las distintas técnicas de aumento, y finalmente se reescala al tamaño deseado.</li>
+</ol>
+<p>El punto clave es el primer paso que sirve para crear imágenes con el suficiente espacio para luego poder aplicar los distintos aumentos. Tienes más información sobre esta técnica en el <a href="https://github.com/fastai/fastbook/blob/master/05_pet_breeds.ipynb">libro de FastAI</a>.</p>
+<p>En nuestro caso estamos haciendo un escalado inicial a tamaño 256 para luego aplicar un escalado a tamaño 128. Notar que no sólo estamos aplicando un escalado como técnica de aumento de datos, sino que también gracias a la función <code>aug_transforms</code> se aplican otros aumentos.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Data-augmentation">
+<a class="anchor" href="#Data-augmentation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Data augmentation<a class="anchor-link" href="#Data-augmentation"> </a>
+</h3>
+<p>Como hemos visto en clase, la técnica de aumento de datos (o <em>data augmentation</em>) nos proporciona un método para aumentar el tamaño de nuestro dataset. FastAI ofrece una serie de aumentos por defecto que se pueden configurar mediante el método <code>aug_transforms</code>. Veamos a continuación que aumentos ofrece dicha función.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">??</span>aug_transforms
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Como vemos la función anterior puede ser utilizada para fijar distintos aumentos y la probabilidad con la que queremos que se apliquen. En caso de querer otro tipo de transformaciones que no estén incluidas por defecto en dicha función podemos usar la librería <a href="https://github.com/albumentations-team/albumentations">Albumentations</a> como se explica en la documentación de <a href="https://docs.fast.ai/tutorial.albumentations.html">FastAI</a>.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Dataloader">
+<a class="anchor" href="#Dataloader" aria-hidden="true"><span class="octicon octicon-link"></span></a>Dataloader<a class="anchor-link" href="#Dataloader"> </a>
+</h3>
+<p>Pasamos ahora a construir nuestro <code>DataLoader</code> que se construye a partir del <code>DataBlock</code> construido anteriormente indicándole el path donde se encuentran nuestras imágenes. Además podemos configurar el <code>DataLoader</code> indicándole el tamaño del batch que queremos utilizar. Al trabajar con GPUs es importante que usemos batches de tamaño 2^n para optimizar el uso de la GPU.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dls</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">dataloaders</span><span class="p">(</span><span class="n">trainPath</span><span class="p">,</span><span class="n">bs</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>A continuación mostramos un batch de nuestro <code>DataLoader</code>. Es conveniente comprobar que realmente se han cargado las imágenes y sus anotaciones de manera correcta.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dls</span><span class="o">.</span><span class="n">show_batch</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Entrenando-el-modelo">
+<a class="anchor" href="#Entrenando-el-modelo" aria-hidden="true"><span class="octicon octicon-link"></span></a>Entrenando el modelo<a class="anchor-link" href="#Entrenando-el-modelo"> </a>
+</h2>
+<p>Pasamos ahora a construir y entrenar nuestro modelo. Pero antes vamos a definir una serie de <em>callbacks</em>.</p>
+<h3 id="Callbacks">
+<a class="anchor" href="#Callbacks" aria-hidden="true"><span class="octicon octicon-link"></span></a>Callbacks<a class="anchor-link" href="#Callbacks"> </a>
+</h3>
+<p>En ocasiones nos interesa cambiar el comportamiento por defecto que tiene el proceso de entrenamiento, por ejemplo para guardar los mejores pesos que se han producido hasta ese momento. El procedimiento usado por FastAI para incluir dicha funcionalidad son los <em>callbacks</em> que sirven para modificar el proceso de entrenamiento. La lista completa de callbacks incluida en FastAI, está disponible en su <a href="https://docs.fast.ai/callback.core.html">documentación</a>. En nuesto caso sólo vamos a utilizar 3 callbacks:</p>
+<ul>
+<li>ShowGraphCallback: este callback sirve para mostrar las curvas de entrenamiento y validación. </li>
+<li>EarlyStoppingCallback: este callback nos permite aplicar la técnica de early stopping. Para ello debemos indicarle la métrica que queremos monitorizar para saber cuándo parar, y la paciencia (es decir cuántas épocas dejamos que el modelo continúe entrenando si no ha habido mejora). </li>
+<li>SaveModelCallback: este callback guarda el mejor modelo encontrado durante el proceso de entrenamiento y lo carga al final del mismo. Como vamos a crear un modelo usando la arquitectura resnet18 conviene que indiquemos esto en el nombre del modelo. También sería conveniente indicar el nombre del dataset para no confundirlos. </li>
+</ul>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">callbacks</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">ShowGraphCallback</span><span class="p">(),</span>
+    <span class="n">EarlyStoppingCallback</span><span class="p">(</span><span class="n">patience</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>
+    <span class="n">SaveModelCallback</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="s1">'modelResnet18'</span><span class="p">)</span>  
+<span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Además de estos tres callbacks utilizaremos otro que nos servirá para acelerar el entrenamiento de nuestros modelos usando <a href="https://docs.fast.ai/callback.fp16.html"><em>mixed precision</em></a>.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Construyendo-el-modelo">
+<a class="anchor" href="#Construyendo-el-modelo" aria-hidden="true"><span class="octicon octicon-link"></span></a>Construyendo el modelo<a class="anchor-link" href="#Construyendo-el-modelo"> </a>
+</h2>
+<p>A continuación construimos nuestro modelo, un objeto de la clase <code>Learner</code>, utilizando el método <code>cnn_learner</code> que toma como parámetros el <code>DataLoader</code>, la arquitectura que queremos entrenar (en nuestro caso un <code>resnet18</code>), la métrica que usaremos para evaluar nuestro modelo (esta evaluación se hace sobre el conjunto de validación, y en nuestro caso será la <em>accuracy</em>), y los callbacks. Notar que en la instrucción anterior incluimos la transformación del modelo a <em>mixed precision</em>.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span> <span class="o">=</span> <span class="n">cnn_learner</span><span class="p">(</span><span class="n">dls</span><span class="p">,</span><span class="n">resnet18</span><span class="p">,</span><span class="n">metrics</span><span class="o">=</span><span class="n">accuracy</span><span class="p">,</span><span class="n">cbs</span><span class="o">=</span><span class="n">callbacks</span><span class="p">)</span><span class="o">.</span><span class="n">to_fp16</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Notar que internamente la función <code>cnn_learner</code> hace varias cosas con la arquitectura que le pasamos como parámetro (en este caso <code>resnet18</code>). Dicha arquitectura fue entrenada inicialmente para el problema de ImageNet, por lo que ante una nueva imagen, su salida sería la predicción en una de las 1000 clases de ImageNet. Sin embargo, internamente la función <code>cnn_learner</code> elimina las últimas capas de dicha arquitectura, y las reemplaza con una adecuada para nuestro problema concreto.</p>
+<p>Antes de entrenar nuestro modelo debemos encontrar un <em>learning rate</em> adecuado.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Learning-rate-finder">
+<a class="anchor" href="#Learning-rate-finder" aria-hidden="true"><span class="octicon octicon-link"></span></a>Learning rate finder<a class="anchor-link" href="#Learning-rate-finder"> </a>
+</h3>
+<p>Como hemos visto en teoría, el trabajo de <a href="https://arxiv.org/abs/1506.01186">Leslie Smith</a> proporciona un método para encontrar un learning rate adecuado para entrenar nuestro modelo. Dicho learning rate lo puedes encontrar con la función <code>lr_find()</code>.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">lr_find</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>La función anterior no solo nos devuelve un gráfico sino que nos sugiere dos valores <code>lr_min</code> y <code>lr_steep</code>. La recomendación es utilizar el valor de <code>lr_steep</code>, para entrenar el modelo.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Fine-tuning">
+<a class="anchor" href="#Fine-tuning" aria-hidden="true"><span class="octicon octicon-link"></span></a>Fine-tuning<a class="anchor-link" href="#Fine-tuning"> </a>
+</h3>
+<p>A continuación vamos a aplicar la técnica de <em>fine tuning</em>. En FastAI esto es tan sencillo como llamar al método <code>fine_tune</code> del objeto <code>Learner</code>. Este método recibe dos parámetros principalmente, el número de épocas (10 en nuestro caso) y el learning rate. El proceso que sigue para entrenar consiste en:</p>
+<ol>
+<li>Congelar todas las capas salvo la última, y entrenar esa parte del modelo durante una época.</li>
+<li>Descongelar la red, y entrenar el modelo por el número de épocas indicado. </li>
+</ol>
+<p>Al ejecutar la siguiente instrucción aparecerá una tabla donde podrás ver la pérdida para el conjunto de entrenamiento, la pérdida para el conjunto de validación, y la accuracy para el conjunto de validación.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">fine_tune</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="n">base_lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Al final del entrenamiento se ha guardado un modelo en la carpeta <code>models</code> que contiene el mejor modelo construido.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">Path</span><span class="p">(</span><span class="s1">'models'</span><span class="p">)</span><span class="o">.</span><span class="n">ls</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Para su uso posterior, es conveniente exportar el modelo.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">export</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Podemos ver que dicho modelo se ha guardado en el mismo directorio donde nos encontramos.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">Path</span><span class="p">()</span><span class="o">.</span><span class="n">ls</span><span class="p">(</span><span class="n">file_exts</span><span class="o">=</span><span class="s1">'.pkl'</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Evaluando-el-modelo">
+<a class="anchor" href="#Evaluando-el-modelo" aria-hidden="true"><span class="octicon octicon-link"></span></a>Evaluando el modelo<a class="anchor-link" href="#Evaluando-el-modelo"> </a>
+</h2>
+<p>Una vez tenemos entrenado nuestro modelo nos interesa saber:</p>
+<ol>
+<li>¿Qué tal funciona en el conjunto de test?</li>
+<li>¿Qué errores comete?</li>
+<li>¿Cómo se utiliza para predecir la clase ante nuevas imágenes?</li>
+</ol>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Evaluando-el-modelo-en-el-conjunto-de-test">
+<a class="anchor" href="#Evaluando-el-modelo-en-el-conjunto-de-test" aria-hidden="true"><span class="octicon octicon-link"></span></a>Evaluando el modelo en el conjunto de test<a class="anchor-link" href="#Evaluando-el-modelo-en-el-conjunto-de-test"> </a>
+</h3>
+<p>Para poder evaluar nuestro modelo en el conjunto de test debemos crear un nuevo <code>DataBlock</code> y un nuevo <code>DataLoader</code>. La única diferencia con el <code>DataBlock</code> utilizado previamente es que para hacer la partición del dataset usamos un objeto de la clase <code>GrandparentSplitter</code> indicando que el conjunto de validación es nuestro conjunto de test. En el caso del <code>DataLoader</code>, la diferencia con el definido anteriormente es que cambiamos la ruta al path.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dbTest</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="n">ImageBlock</span><span class="p">,</span> <span class="n">CategoryBlock</span><span class="p">),</span>
+                 <span class="n">get_items</span><span class="o">=</span><span class="n">get_image_files</span><span class="p">,</span> 
+                 <span class="n">splitter</span><span class="o">=</span><span class="n">GrandparentSplitter</span><span class="p">(</span><span class="n">valid_name</span><span class="o">=</span><span class="s1">'test'</span><span class="p">),</span>
+                 <span class="n">get_y</span><span class="o">=</span><span class="n">parent_label</span><span class="p">,</span>
+                 <span class="n">item_tfms</span> <span class="o">=</span> <span class="n">Resize</span><span class="p">(</span><span class="mi">256</span><span class="p">),</span>
+                 <span class="n">batch_tfms</span><span class="o">=</span><span class="n">aug_transforms</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span><span class="n">min_scale</span><span class="o">=</span><span class="mf">0.75</span><span class="p">))</span>
+<span class="n">dlsTest</span> <span class="o">=</span> <span class="n">dbTest</span><span class="o">.</span><span class="n">dataloaders</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="n">bs</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Para trabajar con este dataloader debemos modificar nuestro objeto <code>Learner</code>. En concreto su atributo <code>dls</code>.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">dls</span> <span class="o">=</span> <span class="n">dlsTest</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Ahora podemos evaluar nuestro modelo usando el método <code>validate</code>.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>El método <code>validate</code> nos devuelve dos valores: el valor de la función de pérdida, y el valor de nuestra métrica (la accuracy en este caso). Por lo que podemos ver que el modelo tiene una accuracy en el conjunto de test de aproximadamente un 82% (esto puede variar dependiendo de la ejecución).</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Interpretación-del-modelo">
+<a class="anchor" href="#Interpretaci%C3%B3n-del-modelo" aria-hidden="true"><span class="octicon octicon-link"></span></a>Interpretación del modelo<a class="anchor-link" href="#Interpretaci%C3%B3n-del-modelo"> </a>
+</h3>
+<p>Hemos visto que nuestro modelo obtiene una accuracy aproximada (puede variar debido a la aleatoriedad del proceso de entrenamiento) de un 92% en el conjunto de validación. Pero nos interesa conocer los errores que se cometen y si estos son razonables. Para ello podemos construir un objeto <code>ClassificationInterpretation</code> a partir de nuestro <code>Learner</code> y mostrar la matriz de confusión asociada. Recordar que hemos cambiado el DataLoader en el paso anterior, porque es conveniente volver al dataloader usado inicialmente.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">dls</span><span class="o">=</span><span class="n">dls</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">interp</span> <span class="o">=</span> <span class="n">ClassificationInterpretation</span><span class="o">.</span><span class="n">from_learner</span><span class="p">(</span><span class="n">learn</span><span class="p">)</span>
+<span class="n">interp</span><span class="o">.</span><span class="n">plot_confusion_matrix</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">12</span><span class="p">),</span><span class="n">dpi</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Si nos fijamos, la mayoría de errores se producen porque el modelo confunde imágenes de la clase street con imágenes de la clase buildings; e imágenes de la clase mountain con la clase glacier. Podemos ver aquellas en las que se produce un mayor error del siguiente modo.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">interp</span><span class="o">.</span><span class="n">plot_top_losses</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="n">nrows</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>A partir de la ejecución anterior, podemos ver que hay algunas imágenes que están mal anotadas, y otras en las que es comprensible por qué se está produciendo el error.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Usando-el-modelo">
+<a class="anchor" href="#Usando-el-modelo" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usando el modelo<a class="anchor-link" href="#Usando-el-modelo"> </a>
+</h3>
+<p>Vamos a ver cómo usar el modelo ante una nueva imagen. Para ello lo primero que vamos a hacer es cargar dicho modelo.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn_inf</span> <span class="o">=</span> <span class="n">load_learner</span><span class="p">(</span><span class="s1">'export.pkl'</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Ahora podemos usar dicho modelo para hacer inferencia con una nueva imagen mediante el método <code>predict</code>. En nuestro caso vamos a usar una imagen del conjunto de test.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn_inf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="s1">'IntelImageClassification/test/buildings/20057.jpg'</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>La función anterior devuelve tres valores:</p>
+<ul>
+<li>La clase (buildings en este caso).</li>
+<li>El índice asociado a dicha clase. </li>
+<li>Las probabilidades para cada una de las categorías.  </li>
+</ul>
+
+</div>
+</div>
+</div>
+</div>
+
+
+
+  </div><!-- from https://github.com/utterance/utterances -->
+<script src="https://utteranc.es/client.js"
+        repo="AP2122/aprendizajeprofundo2122"
+        issue-term="title"
+        label="blogpost-comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script><a class="u-url" href="/aprendizajeprofundo2122/jupyter/2022/01/10/practica1-clasificacion-imagenes.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/aprendizajeprofundo2122/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/aprendizajeprofundo2122/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/aprendizajeprofundo2122/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>An easy to use blogging platform with support for Jupyter Notebooks.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/fastai" target="_blank" title="fastai"><svg class="svg-icon grey"><use xlink:href="/aprendizajeprofundo2122/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://twitter.com/fastdotai" target="_blank" title="fastdotai"><svg class="svg-icon grey"><use xlink:href="/aprendizajeprofundo2122/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
