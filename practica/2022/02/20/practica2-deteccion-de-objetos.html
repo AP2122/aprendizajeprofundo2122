@@ -531,10 +531,10 @@ window.onload = wrap_img;
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">trainPath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">'fruits'</span><span class="p">)</span><span class="o">/</span><span class="s1">'train'</span>
-<span class="n">parserTrain</span> <span class="o">=</span> <span class="n">AnotacionParser</span><span class="p">(</span><span class="n">trainPath</span><span class="o">/</span><span class="s1">'images'</span><span class="p">,</span> <span class="n">trainPath</span><span class="o">/</span><span class="s1">'labels'</span><span class="p">,</span> <span class="n">class_map</span><span class="p">)</span>
+<span class="n">parserTrain</span> <span class="o">=</span> <span class="n">MyParser</span><span class="p">(</span><span class="n">template_record</span><span class="p">,</span> <span class="n">trainPath</span><span class="o">/</span><span class="s1">'images'</span><span class="p">,</span> <span class="n">trainPath</span><span class="o">/</span><span class="s1">'labels'</span><span class="p">,</span> <span class="n">class_map</span><span class="p">)</span>
 
 <span class="n">testPath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">'fruits'</span><span class="p">)</span><span class="o">/</span><span class="s1">'test'</span>
-<span class="n">parserTest</span> <span class="o">=</span> <span class="n">AnotacionParser</span><span class="p">(</span><span class="n">testPath</span><span class="o">/</span><span class="s1">'images'</span><span class="p">,</span> <span class="n">testPath</span><span class="o">/</span><span class="s1">'labels'</span><span class="p">,</span> <span class="n">class_map</span><span class="p">)</span>
+<span class="n">parserTest</span> <span class="o">=</span> <span class="n">MyParser</span><span class="p">(</span><span class="n">template_record</span><span class="p">,</span><span class="n">testPath</span><span class="o">/</span><span class="s1">'images'</span><span class="p">,</span> <span class="n">testPath</span><span class="o">/</span><span class="s1">'labels'</span><span class="p">,</span> <span class="n">class_map</span><span class="p">)</span>
 </pre></div>
 
     </div>
