@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Detector de objetos | Aprendizaje Profundo 21/22</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Detector de objetos" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Usando Icevision y FastAI para crear un detector de objetos." />
+<meta property="og:description" content="Usando Icevision y FastAI para crear un detector de objetos." />
+<link rel="canonical" href="https://ap2122.github.io/aprendizajeprofundo2122/practica/2022/02/20/practica2-deteccion-de-objetos.html" />
+<meta property="og:url" content="https://ap2122.github.io/aprendizajeprofundo2122/practica/2022/02/20/practica2-deteccion-de-objetos.html" />
+<meta property="og:site_name" content="Aprendizaje Profundo 21/22" />
+<meta property="og:image" content="https://ap2122.github.io/aprendizajeprofundo2122/images/chart-preview.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2022-02-20T00:00:00-06:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://ap2122.github.io/aprendizajeprofundo2122/images/chart-preview.png" />
+<meta property="twitter:title" content="Detector de objetos" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2022-02-20T00:00:00-06:00","datePublished":"2022-02-20T00:00:00-06:00","description":"Usando Icevision y FastAI para crear un detector de objetos.","headline":"Detector de objetos","image":"https://ap2122.github.io/aprendizajeprofundo2122/images/chart-preview.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://ap2122.github.io/aprendizajeprofundo2122/practica/2022/02/20/practica2-deteccion-de-objetos.html"},"url":"https://ap2122.github.io/aprendizajeprofundo2122/practica/2022/02/20/practica2-deteccion-de-objetos.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/aprendizajeprofundo2122/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://ap2122.github.io/aprendizajeprofundo2122/feed.xml" title="Aprendizaje Profundo 21/22" /><link rel="shortcut icon" type="image/x-icon" href="/aprendizajeprofundo2122/images/favicon.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head>
+<body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/aprendizajeprofundo2122/">Aprendizaje Profundo 21/22</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/aprendizajeprofundo2122/about/">About Me</a><a class="page-link" href="/aprendizajeprofundo2122/search/">Search</a><a class="page-link" href="/aprendizajeprofundo2122/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Detector de objetos</h1><p class="page-description">Usando Icevision y FastAI para crear un detector de objetos.</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2022-02-20T00:00:00-06:00" itemprop="datePublished">
+        Feb 20, 2022
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      10 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/aprendizajeprofundo2122/categories/#practica">practica</a>
+        
+      
+      </p>
+    
+
+    
+      
+        <div class="pb-5 d-flex flex-justify-center">
+          <div class="px-2">
+
+    <a href="https://github.com/AP2122/aprendizajeprofundo2122/tree/master/_notebooks/2022-02-20-practica2-deteccion-de-objetos.ipynb" role="button" target="_blank">
+<img class="notebook-badge-image" src="/aprendizajeprofundo2122/assets/badges/github.svg" alt="View On GitHub">
+    </a>
+</div>
+
+          
+          <div class="px-2">
+    <a href="https://colab.research.google.com/github/AP2122/aprendizajeprofundo2122/blob/master/_notebooks/2022-02-20-practica2-deteccion-de-objetos.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/aprendizajeprofundo2122/assets/badges/colab.svg" alt="Open In Colab"/>
+    </a>
+</div>
+          
+        </div>
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h2"><a href="#Librerías">Librerías </a></li>
+<li class="toc-entry toc-h2"><a href="#Dataset">Dataset </a></li>
+<li class="toc-entry toc-h2"><a href="#Icevision">Icevision </a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#Parser">Parser </a></li>
+<li class="toc-entry toc-h3"><a href="#Records">Records </a></li>
+<li class="toc-entry toc-h3"><a href="#Transforms">Transforms </a></li>
+<li class="toc-entry toc-h3"><a href="#Dataset">Dataset </a></li>
+<li class="toc-entry toc-h3"><a href="#DataLoaders">DataLoaders </a></li>
+<li class="toc-entry toc-h3"><a href="#Entrenando-el-modelo">Entrenando el modelo </a></li>
+<li class="toc-entry toc-h3"><a href="#Evaluando-el-modelo">Evaluando el modelo </a></li>
+<li class="toc-entry toc-h3"><a href="#Inferencia">Inferencia </a></li>
+</ul>
+</li>
+</ul><!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2022-02-20-practica2-deteccion-de-objetos.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>En este notebook se muestra cómo crear un modelo de detección de objetos usando la arquitectura Faster R-CNN. Para crear nuestro modelo vamos a utilizar la librería <a href="https://airctic.com/">IceVision</a> que es una librería para crear modelos de detección usando FastAI.</p>
+<p>En esta práctica vamos a hacer un uso intensivo de la GPU, así que es importante activar su uso desde la opción Configuración del cuaderno del menú Editar (esta opción debería estar habilitada por defecto, pero es recomendable que lo compruebes).</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Librerías">
+<a class="anchor" href="#Librer%C3%ADas" aria-hidden="true"><span class="octicon octicon-link"></span></a>Librerías<a class="anchor-link" href="#Librer%C3%ADas"> </a>
+</h2>
+<p>Comenzamos descargando la librería IceVision. Al finalizar la instalación deberás reiniciar el kernel (menú Entorno de ejecución -&gt; Reiniciar Entorno de ejecución).</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">!</span>pip install icevision<span class="o">[</span>all<span class="o">]</span> -Uq
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>A continuación, cargamos aquellas librerías que son necesarias.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">icevision.all</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Dataset">
+<a class="anchor" href="#Dataset" aria-hidden="true"><span class="octicon octicon-link"></span></a>Dataset<a class="anchor-link" href="#Dataset"> </a>
+</h2>
+<p>Para esta práctica vamos a usar como ejemplo el <a href="https://www.kaggle.com/mbkinaci/fruit-images-for-object-detection">Fruit Images for Object Detection dataset</a>. Este dataset consta de 240 imágenes de entrenamiento y 60 de test con tres categorías: manzanas, plátanos y naranjas. Los siguientes comandos descargan y descomprimen dicho dataset.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%capture</span>
+<span class="err">!</span><span class="n">wget</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="o">.</span><span class="n">dropbox</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">s</span><span class="o">/</span><span class="mi">1</span><span class="n">dsfd5rrmg3riqj</span><span class="o">/</span><span class="n">fruits</span><span class="o">.</span><span class="n">zip</span><span class="err">?</span><span class="n">dl</span><span class="o">=</span><span class="mi">1</span> <span class="o">-</span><span class="n">O</span> <span class="n">fruits</span><span class="o">.</span><span class="n">zip</span>
+<span class="err">!</span><span class="n">unzip</span> <span class="n">fruits</span><span class="o">.</span><span class="n">zip</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Vamos a explorar el contenido de este dataset. Para ello vamos a crear un objeto Path que apunta al directorio que acabamos de crear.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s1">'fruits'</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Como en la práctica anterior, podemos ver el contenido de este directorio usando el comando <code>ls()</code>.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">path</span><span class="o">.</span><span class="n">ls</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Si exploráis el directorio podréis ver que hay dos carpetas (llamadas train y test), y que cada una de ellas contiene dos carpetas, llamadas images y labels. La carpeta images contiene las imágenes del dataset, y la carpeta labels contiene las anotaciones en formato Pascal VOC. Para cada imagen, hay un fichero xml con el mismo nombre que contiene su extensión.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Icevision">
+<a class="anchor" href="#Icevision" aria-hidden="true"><span class="octicon octicon-link"></span></a>Icevision<a class="anchor-link" href="#Icevision"> </a>
+</h2>
+<p>El proceso para crear y evaluar un modelo de IceVision consta de los siguientes pasos:</p>
+<ol>
+<li>Crear un parser para leer las imágenes y las anotaciones.</li>
+<li>Construir objetos record a partir de los parser. </li>
+<li>Crear los datasets a partir de los records y los aumentos que queramos aplicar. </li>
+<li>Crear un dataloader a partir de los datasets. </li>
+<li>Definir un modelo. </li>
+<li>Entrenar el modelo. </li>
+<li>Guardar el modelo.</li>
+<li>Usar el modelo para inferencia</li>
+</ol>
+<p>Vamos a ver en detalle cada uno de estos pasos.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Parser">
+<a class="anchor" href="#Parser" aria-hidden="true"><span class="octicon octicon-link"></span></a>Parser<a class="anchor-link" href="#Parser"> </a>
+</h3>
+<p>IceVision proporciona una serie de parsers definidos por defecto para leer las anotaciones en distintos formatos entre ellos Pascal VOC y COCO. También es posible crear parsers propios. A pesar de que existe un parser para el formato de nuestra anotación, vamos a ver cómo crear un parser desde cero.</p>
+<p>El primer paso es crear una plantilla para nuestro dataset.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">template_record</span> <span class="o">=</span> <span class="n">ObjectDetectionRecord</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>A continuación IceVision proporciona el método <code>generate_template</code> que nos proporciona los métodos que debemos implementar.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">Parser</span><span class="o">.</span><span class="n">generate_template</span><span class="p">(</span><span class="n">template_record</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>A continuación vamos a implementar nuestra clase con cada uno de esos métodos.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">xml.etree.ElementTree</span> <span class="k">as</span> <span class="nn">ET</span>
+
+<span class="k">class</span> <span class="nc">MyParser</span><span class="p">(</span><span class="n">Parser</span><span class="p">):</span>
+    <span class="sd">"""Definimos el constructor de nuestra clase que va a recibir cuatro parámetros:</span>
+<span class="sd">       - La plantilla definida previamente.</span>
+<span class="sd">       - El path al directorio donde se encuentran las imágenes.</span>
+<span class="sd">       - El path al directorio donde se encuentran las anotaciones.</span>
+<span class="sd">       - Un objeto class_map con las clases que tiene nuestro dataset.</span>
+<span class="sd">    """</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_record</span><span class="p">,</span><span class="n">path_img</span><span class="p">,</span><span class="n">path_anotaciones</span><span class="p">,</span><span class="n">class_map</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">template_record</span><span class="o">=</span><span class="n">template_record</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path_img</span> <span class="o">=</span> <span class="n">path_img</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path_anotaciones</span><span class="o">=</span> <span class="n">path_anotaciones</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">class_map</span> <span class="o">=</span> <span class="n">class_map</span>
+
+    <span class="sd">"""El método iter escanea el directorio de anotaciones y nos devuelve el nombre </span>
+<span class="sd">    de cada fichero. Dicho nombre será utilizado por el resto de método"""</span>    
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">os</span><span class="o">.</span><span class="n">scandir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path_anotaciones</span><span class="p">)</span> <span class="k">as</span> <span class="n">ficheros</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">fichero</span> <span class="ow">in</span> <span class="n">ficheros</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="n">fichero</span><span class="o">.</span><span class="n">name</span>
+                
+    <span class="sd">"""El método len nos indica el número de elementos de los que consta nuestro </span>
+<span class="sd">    dataset"""</span>
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path_anotaciones</span><span class="p">)</span>
+
+    <span class="sd">"""A partir del nombre del fichero de anotación, record_id debe devolver el identificador</span>
+<span class="sd">    (o nombre) de la imagen asociada"""</span>
+    <span class="k">def</span> <span class="nf">record_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Hashable</span><span class="p">:</span> <span class="c1">#o --&gt; nombre de la anotación</span>
+        <span class="k">return</span> <span class="n">o</span><span class="p">[:</span><span class="n">o</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)]</span>
+
+    <span class="sd">"""A continuación deberíamos definir el método parse_fields, pero vamos a definir una serie</span>
+<span class="sd">    de definiciones previas que nos serán útiles"""</span>
+
+    <span class="sd">"""El método prepare recibe el nombre de un fichero de anotación como parámetro y realiza</span>
+<span class="sd">    una serie de labores de preprocesamiento sobre dicho fichero de anotación. En este caso lo procesa</span>
+<span class="sd">    usando la funcionalidad de la librería para trabajar con xml"""</span>
+    <span class="k">def</span> <span class="nf">prepare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
+        <span class="n">tree</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path_anotaciones</span><span class="p">)</span><span class="o">+</span><span class="s1">'/'</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">o</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_root</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">getroot</span><span class="p">()</span>
+
+    <span class="sd">"""El método filepath a partir del nombre del fichero de anotación devuelve el path de </span>
+<span class="sd">    la imagen asociada"""</span>
+    <span class="k">def</span> <span class="nf">filepath</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]:</span>
+        <span class="n">path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">o</span><span class="p">[:</span><span class="n">o</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)]</span><span class="si">}</span><span class="s2">.jpg"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_img</span> <span class="o">/</span> <span class="n">path</span>
+
+    <span class="sd">"""La función image_width_height devuelve el ancho y el alto de una imagen a partir del nombre</span>
+<span class="sd">    del fichero de anotación"""</span>
+    <span class="k">def</span> <span class="nf">image_width_height</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">get_img_size</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path_img</span><span class="p">)</span><span class="o">+</span><span class="s1">'/'</span><span class="o">+</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">o</span><span class="p">[:</span><span class="n">o</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)]</span><span class="si">}</span><span class="s2">.jpg"</span><span class="p">)</span>
+
+    <span class="sd">"""La función labels recibe el nombre del fichero de anotación y debe devolver una lista </span>
+<span class="sd">    con los identificadores de las clases contenidas en dicho fichero."""</span>
+    <span class="k">def</span> <span class="nf">labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="nb">object</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="s2">"object"</span><span class="p">):</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">"name"</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+            <span class="n">label_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_map</span><span class="o">.</span><span class="n">get_by_name</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+            <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">labels</span>
+
+    <span class="sd">"""La función bboxes recibe el nombre del fichero de anotación y debe devolver una lista </span>
+<span class="sd">    de bboxes que son las anotaciones contenidas en dicho fichero. El formato de cada BBOX es</span>
+<span class="sd">    xmin, ymin, xmax, ymax."""</span>
+    <span class="k">def</span> <span class="nf">bboxes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">BBox</span><span class="p">]:</span>
+        <span class="k">def</span> <span class="nf">to_int</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+
+        <span class="n">bboxes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="nb">object</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="o">.</span><span class="n">iter</span><span class="p">(</span><span class="s2">"object"</span><span class="p">):</span>
+            <span class="n">xml_bbox</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">"bndbox"</span><span class="p">)</span>
+            <span class="n">xmin</span> <span class="o">=</span> <span class="n">to_int</span><span class="p">(</span><span class="n">xml_bbox</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">"xmin"</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+            <span class="n">ymin</span> <span class="o">=</span> <span class="n">to_int</span><span class="p">(</span><span class="n">xml_bbox</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">"ymin"</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+            <span class="n">xmax</span> <span class="o">=</span> <span class="n">to_int</span><span class="p">(</span><span class="n">xml_bbox</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">"xmax"</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+            <span class="n">ymax</span> <span class="o">=</span> <span class="n">to_int</span><span class="p">(</span><span class="n">xml_bbox</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">"ymax"</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+
+            <span class="n">bbox</span> <span class="o">=</span> <span class="n">BBox</span><span class="o">.</span><span class="n">from_xyxy</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">ymin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">,</span> <span class="n">ymax</span><span class="p">)</span>
+            <span class="n">bboxes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bbox</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">bboxes</span>
+
+
+    <span class="sd">"""Definimos a continuación el método parse_fields para cada elemento de nuestro </span>
+<span class="sd">    dataset proporcionamos:</span>
+<span class="sd">       - El path a la imagen.</span>
+<span class="sd">       - El tamaño de la imagen.</span>
+<span class="sd">       - El mapa de clases.</span>
+<span class="sd">       - Los rectángulos que indican cada uno de los objetos de la imagen.</span>
+<span class="sd">       - Las etiquetas de cada uno de los objetos de la imagen."""</span>
+    <span class="k">def</span> <span class="nf">parse_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">record</span><span class="p">:</span> <span class="n">BaseRecord</span><span class="p">,</span> <span class="n">is_new</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prepare</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">is_new</span><span class="p">:</span>
+            <span class="n">record</span><span class="o">.</span><span class="n">set_filepath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">(</span><span class="n">o</span><span class="p">))</span>
+            <span class="n">record</span><span class="o">.</span><span class="n">set_img_size</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image_width_height</span><span class="p">(</span><span class="n">o</span><span class="p">))</span>
+            <span class="n">record</span><span class="o">.</span><span class="n">detection</span><span class="o">.</span><span class="n">set_class_map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">class_map</span><span class="p">)</span>
+        <span class="n">record</span><span class="o">.</span><span class="n">detection</span><span class="o">.</span><span class="n">add_bboxes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bboxes</span><span class="p">(</span><span class="n">o</span><span class="p">))</span>
+        <span class="n">record</span><span class="o">.</span><span class="n">detection</span><span class="o">.</span><span class="n">add_labels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">o</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Una vez que hemos definido nuestra clase para parsear las anotaciones de nuestro dataset, vamos a construir los objetos correspondientes.</p>
+<p>Lo primero que tenemos que hacer es construir nuestro <code>class_map</code> que es un objeto de la clase <code>ClassMap</code> y que contiene las clases de objetos de nuestro dataset.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">class_map</span> <span class="o">=</span> <span class="n">ClassMap</span><span class="p">([</span><span class="s1">'apple'</span><span class="p">,</span><span class="s1">'banana'</span><span class="p">,</span><span class="s1">'orange'</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>A continuación definimos nuestros parsers. Uno para leer el conjunto de entrenamiento, y otro para el de test.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">trainPath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">'fruits'</span><span class="p">)</span><span class="o">/</span><span class="s1">'train'</span>
+<span class="n">parserTrain</span> <span class="o">=</span> <span class="n">AnotacionParser</span><span class="p">(</span><span class="n">trainPath</span><span class="o">/</span><span class="s1">'images'</span><span class="p">,</span> <span class="n">trainPath</span><span class="o">/</span><span class="s1">'labels'</span><span class="p">,</span> <span class="n">class_map</span><span class="p">)</span>
+
+<span class="n">testPath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">'fruits'</span><span class="p">)</span><span class="o">/</span><span class="s1">'test'</span>
+<span class="n">parserTest</span> <span class="o">=</span> <span class="n">AnotacionParser</span><span class="p">(</span><span class="n">testPath</span><span class="o">/</span><span class="s1">'images'</span><span class="p">,</span> <span class="n">testPath</span><span class="o">/</span><span class="s1">'labels'</span><span class="p">,</span> <span class="n">class_map</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Records">
+<a class="anchor" href="#Records" aria-hidden="true"><span class="octicon octicon-link"></span></a>Records<a class="anchor-link" href="#Records"> </a>
+</h3>
+<p>Un record es un diccionario que contiene todos los campos parseados definidos en el proceso anterior. Mientras que cada parser es específico para cada anotación concreta, los objetos record tienen una estructura común. Para construir los records a partir de nuestros objetos <code>parser</code> debemos llamar al método <code>parse</code> e indicarle cómo se van a repartir los datos que se lean.</p>
+<p>Como siempre, vamos a dividir nuestro dataset en tres partes: un conjunto de entrenamiento, uno de validación y uno de test. Por lo tanto tendremos que construir tres records llamados <code>train_records</code>, <code>valid_records</code> y <code>test_records</code>. Los records de entrenamiento y validación los construiremos a partir de los datos de entrenamiento usando una partición 90/10. Mientras que el record de test se construye a partir del conjunto de test usándolo completamente.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">train_records</span><span class="p">,</span> <span class="n">valid_records</span> <span class="o">=</span> <span class="n">parserTrain</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">RandomSplitter</span><span class="p">((</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)))</span>
+<span class="n">test_records</span><span class="p">,</span><span class="n">_</span><span class="o">=</span> <span class="n">parserTest</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">RandomSplitter</span><span class="p">((</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Transforms">
+<a class="anchor" href="#Transforms" aria-hidden="true"><span class="octicon octicon-link"></span></a>Transforms<a class="anchor-link" href="#Transforms"> </a>
+</h3>
+<p>Las transformaciones o aumentos son una parte fundamental cuando estamos construyendo modelos en visión por computador. IceVision incluye por defecto la librería <a href="https://github.com/albumentations-team/albumentations">Albumentations</a> que nos proporciona una gran cantidad de transformaciones. Además es capaz de gestionar los cambios en la anotación que son necesarios cuando se trabaja en detección de objetos.</p>
+<p>IceVision proporciona una función muy útil que es <code>tfms.A.aug_tfms</code> con una gran cantidad de transformaciones. Además podemos añadirle cualquier otra transformación de Albumentations.</p>
+<p>Para nuestro ejemplo vamos a usar las transformaciones sugeridas por defecto por IceVision y aplicar la técnica de presizing vista para clasificación de imágenes; además será necesario normalizar las imágenes al rango de las imágenes de ImageNet. Notar que las transformaciones se aplicarán solo al conjunto de entrenamiento. Para los conjuntos de validación y test únicamente tendremos que escalar la imagen al tamaño adecuado y normalizarla.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">presize</span> <span class="o">=</span> <span class="mi">512</span>
+<span class="n">size</span> <span class="o">=</span> <span class="mi">384</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">train_tfms</span> <span class="o">=</span> <span class="n">tfms</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">Adapter</span><span class="p">(</span>
+    <span class="p">[</span><span class="o">*</span><span class="n">tfms</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">aug_tfms</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">presize</span><span class="o">=</span><span class="n">presize</span><span class="p">),</span> <span class="n">tfms</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">Normalize</span><span class="p">()]</span>
+<span class="p">)</span>
+<span class="n">valid_tfms</span> <span class="o">=</span> <span class="n">tfms</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">Adapter</span><span class="p">([</span><span class="o">*</span><span class="n">tfms</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">resize_and_pad</span><span class="p">(</span><span class="n">size</span><span class="p">),</span> <span class="n">tfms</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">Normalize</span><span class="p">()])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Dataset">
+<a class="anchor" href="#Dataset" aria-hidden="true"><span class="octicon octicon-link"></span></a>Dataset<a class="anchor-link" href="#Dataset"> </a>
+</h3>
+<p>La clase <code>Dataset</code> sirve para combinar los records y las transformaciones. Debemos crear un dataset para nuestro conjunto de entrenamiento, otro para el conjunto de validación y otro para el de test.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">train_ds</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">train_records</span><span class="p">,</span> <span class="n">train_tfms</span><span class="p">)</span>
+<span class="n">valid_ds</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">valid_records</span><span class="p">,</span> <span class="n">valid_tfms</span><span class="p">)</span>
+<span class="n">test_ds</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">test_records</span><span class="p">,</span> <span class="n">valid_tfms</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Una vez creados dichos datasets podemos mostrar imágenes de los mismos. En concreto la siguiente instrucción muestra imágenes del conjunto de entrenamiento a las cuáles se les han aplicado una serie de transformaciones. Es conveniente ejecutar esta visualización para comprobar que todo está correcto.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">samples</span> <span class="o">=</span> <span class="p">[</span><span class="n">train_ds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+<span class="n">show_samples</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">class_map</span><span class="o">=</span><span class="n">class_map</span><span class="p">,</span> <span class="n">denormalize_fn</span><span class="o">=</span><span class="n">denormalize_imagenet</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="DataLoaders">
+<a class="anchor" href="#DataLoaders" aria-hidden="true"><span class="octicon octicon-link"></span></a>DataLoaders<a class="anchor-link" href="#DataLoaders"> </a>
+</h3>
+<p>Al igual que vimos para los modelos de clasificación de FastAI, el último paso es crear nuestros DataLoaders a partir de los datasets construidos anteriormente. Notar que cada modelo tiene su propio DataLoader. En este caso como vamos a crear un modelo de Faster RCNN debemos usar las siguientes instrucciones.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">train_dl</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">torchvision</span><span class="o">.</span><span class="n">faster_rcnn</span><span class="o">.</span><span class="n">train_dl</span><span class="p">(</span><span class="n">train_ds</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">valid_dl</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">torchvision</span><span class="o">.</span><span class="n">faster_rcnn</span><span class="o">.</span><span class="n">valid_dl</span><span class="p">(</span><span class="n">valid_ds</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">test_dl</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">torchvision</span><span class="o">.</span><span class="n">faster_rcnn</span><span class="o">.</span><span class="n">valid_dl</span><span class="p">(</span><span class="n">test_ds</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Entrenando-el-modelo">
+<a class="anchor" href="#Entrenando-el-modelo" aria-hidden="true"><span class="octicon octicon-link"></span></a>Entrenando el modelo<a class="anchor-link" href="#Entrenando-el-modelo"> </a>
+</h3>
+<p>Para crear y entrenar nuestro modelo debemos crear un objeto <code>Learner</code> de FastAI. Para crear dicho objeto, lo primero que debemos hacer es construir un modelo con la arquitectura que queremos usar, en este caso Faster RCNN y con un backbone que es Resnet18.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">torchvision</span><span class="o">.</span><span class="n">faster_rcnn</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">backbone</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">torchvision</span><span class="o">.</span><span class="n">faster_rcnn</span><span class="o">.</span><span class="n">backbones</span><span class="o">.</span><span class="n">resnet18_fpn</span><span class="p">(</span><span class="n">pretrained</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                                       <span class="n">num_classes</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">class_map</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>A continuación debemos proporcionar las métricas que queremos utilizar para evaluar el modelo. Por el momento la única métrica soportada por IceVision es el mAP de COCO, por lo tanto utilizaremos dicha métrica.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="n">COCOMetric</span><span class="p">(</span><span class="n">metric_type</span><span class="o">=</span><span class="n">COCOMetricType</span><span class="o">.</span><span class="n">bbox</span><span class="p">)]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Ya estamos listos para construir nuestro <code>Learner</code>. Notar que dicho objeto se construye de manera distinta dependiendo de la arquitectura que queramos utilizar.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">torchvision</span><span class="o">.</span><span class="n">faster_rcnn</span><span class="o">.</span><span class="n">fastai</span><span class="o">.</span><span class="n">learner</span><span class="p">(</span><span class="n">dls</span><span class="o">=</span><span class="p">[</span><span class="n">train_dl</span><span class="p">,</span> <span class="n">valid_dl</span><span class="p">],</span> <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Ahora podemos entrenar nuestro modelo utilizando la técnica de fine tuning que vimos en clase.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">fine_tune</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="n">freeze_epochs</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Una vez finalizado el entrenamiento podemos guardar nuestro modelo del siguiente modo.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span><span class="s1">'fasterRCNNFruits.pth'</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Evaluando-el-modelo">
+<a class="anchor" href="#Evaluando-el-modelo" aria-hidden="true"><span class="octicon octicon-link"></span></a>Evaluando el modelo<a class="anchor-link" href="#Evaluando-el-modelo"> </a>
+</h3>
+<p>Al igual que vimos para los modelos de clasificación, la métrica mostrada durante el proceso de entrenamiento se refiere al conjunto de validación, mientras que nos interesa saber el resultado obtenido para el conjunto de test.</p>
+<p>Para ello, lo primero que debemos hacer es construir un nuevo dataloader del siguiente modo, indicando que el conjunto de validación es el de test.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">newdl</span> <span class="o">=</span> <span class="n">fastai</span><span class="o">.</span><span class="n">DataLoaders</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">torchvision</span><span class="o">.</span><span class="n">faster_rcnn</span><span class="o">.</span><span class="n">fastai</span><span class="o">.</span><span class="n">convert_dataloader_to_fastai</span><span class="p">(</span><span class="n">train_dl</span><span class="p">),</span>
+                           <span class="n">models</span><span class="o">.</span><span class="n">torchvision</span><span class="o">.</span><span class="n">faster_rcnn</span><span class="o">.</span><span class="n">fastai</span><span class="o">.</span><span class="n">convert_dataloader_to_fastai</span><span class="p">(</span><span class="n">test_dl</span><span class="p">))</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s1">'cuda'</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>A continuación modificamos el dataloader del objeto <code>Learn</code> que hemos entrenado anteriormente.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">dls</span> <span class="o">=</span> <span class="n">newdl</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Por último evaluamos nuestro modelo usando el método <code>validate()</code>. Al igual que en el caso de los modelos de clasificación el método <code>validate()</code> devuelve dos valores, el valor de la pérdida y el valor de la métrica asociada al conjunto de validación, que en este caso es el de test.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Inferencia">
+<a class="anchor" href="#Inferencia" aria-hidden="true"><span class="octicon octicon-link"></span></a>Inferencia<a class="anchor-link" href="#Inferencia"> </a>
+</h3>
+<p>Vamos a ver cómo usar el modelo ante una nueva imagen. Para ello lo primero que vamos a hacer es cargar dicho modelo. Para ello debemos crear un modelo con la arquitectura que utilizamos (Faster RCNN en nuestro caso), y posteriormente cargar el modelo.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">torchvision</span><span class="o">.</span><span class="n">faster_rcnn</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">backbone</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">torchvision</span><span class="o">.</span><span class="n">faster_rcnn</span><span class="o">.</span><span class="n">backbones</span><span class="o">.</span><span class="n">resnet18_fpn</span><span class="p">,</span>
+                                             <span class="n">num_classes</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">class_map</span><span class="p">))</span>
+<span class="n">state_dict</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">'fasterRCNNFruits.pth'</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">state_dict</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>El siguiente paso es cargar la imagen, para lo que usaremos la librería <code>PIL</code>.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">PIL</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">img</span> <span class="o">=</span> <span class="n">PIL</span><span class="o">.</span><span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">'fruits/test/images/mixed_25.jpg'</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>La siguiente instrucción permite mostrar la imagen que acabamos de cargar.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">img</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Ya estaríamos listos para relizar las predicciones sobre la imagen. Sin embargo, cabe recordar que primero debemos reescalar las imágenes y normalizarlas.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">infer_tfms</span> <span class="o">=</span> <span class="n">tfms</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">Adapter</span><span class="p">([</span><span class="o">*</span><span class="n">tfms</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">resize_and_pad</span><span class="p">(</span><span class="n">size</span><span class="p">),</span><span class="n">tfms</span><span class="o">.</span><span class="n">A</span><span class="o">.</span><span class="n">Normalize</span><span class="p">()])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Ya podemos realizar las predicciones mediante el método <code>end2end_detect</code>. Este método, que depende de la arquitectura que hayamos utilizado, recibe como parámetros la imagen sobre la que queremos realizar las predicciones, las transformaciones a aplicar, el modelo (movido a la CPU), el mapa de clases, y el nivel de confianza mínimo para realizar la predicción.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">pred_dict</span>  <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">torchvision</span><span class="o">.</span><span class="n">faster_rcnn</span><span class="o">.</span><span class="n">end2end_detect</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">infer_tfms</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">"cpu"</span><span class="p">),</span> <span class="n">class_map</span><span class="o">=</span><span class="n">class_map</span><span class="p">,</span> <span class="n">detection_threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">pred_dict</span><span class="p">[</span><span class="s1">'img'</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+</div>
+
+
+
+  </div><!-- from https://github.com/utterance/utterances -->
+<script src="https://utteranc.es/client.js"
+        repo="AP2122/aprendizajeprofundo2122"
+        issue-term="title"
+        label="blogpost-comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script><a class="u-url" href="/aprendizajeprofundo2122/practica/2022/02/20/practica2-deteccion-de-objetos.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/aprendizajeprofundo2122/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/aprendizajeprofundo2122/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/aprendizajeprofundo2122/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>Página del curso.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/joheras" target="_blank" title="joheras"><svg class="svg-icon grey"><use xlink:href="/aprendizajeprofundo2122/assets/minima-social-icons.svg#github"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
