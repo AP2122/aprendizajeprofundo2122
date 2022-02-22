@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Segmentación semántica | Aprendizaje Profundo 21/22</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Segmentación semántica" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Usando FastAI para crear un modelo de segmentación semántica." />
+<meta property="og:description" content="Usando FastAI para crear un modelo de segmentación semántica." />
+<link rel="canonical" href="https://ap2122.github.io/aprendizajeprofundo2122/practica/2022/02/22/practica3-segmentacion-semantica.html" />
+<meta property="og:url" content="https://ap2122.github.io/aprendizajeprofundo2122/practica/2022/02/22/practica3-segmentacion-semantica.html" />
+<meta property="og:site_name" content="Aprendizaje Profundo 21/22" />
+<meta property="og:image" content="https://ap2122.github.io/aprendizajeprofundo2122/images/chart-preview.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2022-02-22T00:00:00-06:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://ap2122.github.io/aprendizajeprofundo2122/images/chart-preview.png" />
+<meta property="twitter:title" content="Segmentación semántica" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2022-02-22T00:00:00-06:00","datePublished":"2022-02-22T00:00:00-06:00","description":"Usando FastAI para crear un modelo de segmentación semántica.","headline":"Segmentación semántica","image":"https://ap2122.github.io/aprendizajeprofundo2122/images/chart-preview.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://ap2122.github.io/aprendizajeprofundo2122/practica/2022/02/22/practica3-segmentacion-semantica.html"},"url":"https://ap2122.github.io/aprendizajeprofundo2122/practica/2022/02/22/practica3-segmentacion-semantica.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/aprendizajeprofundo2122/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://ap2122.github.io/aprendizajeprofundo2122/feed.xml" title="Aprendizaje Profundo 21/22" /><link rel="shortcut icon" type="image/x-icon" href="/aprendizajeprofundo2122/images/favicon.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head>
+<body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/aprendizajeprofundo2122/">Aprendizaje Profundo 21/22</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/aprendizajeprofundo2122/about/">About Me</a><a class="page-link" href="/aprendizajeprofundo2122/search/">Search</a><a class="page-link" href="/aprendizajeprofundo2122/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Segmentación semántica</h1><p class="page-description">Usando FastAI para crear un modelo de segmentación semántica.</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2022-02-22T00:00:00-06:00" itemprop="datePublished">
+        Feb 22, 2022
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      9 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/aprendizajeprofundo2122/categories/#practica">practica</a>
+        
+      
+      </p>
+    
+
+    
+      
+        <div class="pb-5 d-flex flex-justify-center">
+          <div class="px-2">
+
+    <a href="https://github.com/AP2122/aprendizajeprofundo2122/tree/master/_notebooks/2022-02-22-practica3-segmentacion-semantica.ipynb" role="button" target="_blank">
+<img class="notebook-badge-image" src="/aprendizajeprofundo2122/assets/badges/github.svg" alt="View On GitHub">
+    </a>
+</div>
+
+          
+          <div class="px-2">
+    <a href="https://colab.research.google.com/github/AP2122/aprendizajeprofundo2122/blob/master/_notebooks/2022-02-22-practica3-segmentacion-semantica.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/aprendizajeprofundo2122/assets/badges/colab.svg" alt="Open In Colab"/>
+    </a>
+</div>
+          
+        </div>
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h2"><a href="#Librerías">Librerías </a></li>
+<li class="toc-entry toc-h2"><a href="#Dataset">Dataset </a></li>
+<li class="toc-entry toc-h2"><a href="#Definiciones-previas">Definiciones previas </a></li>
+<li class="toc-entry toc-h2"><a href="#Partición-del-dataset">Partición del dataset </a></li>
+<li class="toc-entry toc-h2"><a href="#Data-augmentation">Data augmentation </a></li>
+<li class="toc-entry toc-h2"><a href="#Dataloader">Dataloader </a></li>
+<li class="toc-entry toc-h2"><a href="#Definición-de-modelo">Definición de modelo </a></li>
+<li class="toc-entry toc-h2"><a href="#Evaluando-el-modelo">Evaluando el modelo </a></li>
+<li class="toc-entry toc-h2"><a href="#Inferencia">Inferencia </a></li>
+</ul><!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2022-02-22-practica3-segmentacion-semantica.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>En este notebook se muestra cómo crear un modelo de segmentación semántica usando la arquitectura U-net incluida en la librería FastAI.</p>
+<p>En esta práctica vamos a hacer un uso intensivo de la GPU, así que es importante activar su uso desde la opción Configuración del cuaderno del menú Editar (esta opción debería estar habilitada por defecto, pero es recomendable que lo compruebes).</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Librerías">
+<a class="anchor" href="#Librer%C3%ADas" aria-hidden="true"><span class="octicon octicon-link"></span></a>Librerías<a class="anchor-link" href="#Librer%C3%ADas"> </a>
+</h2>
+<p>Comenzamos actualizando la librería FastAI. Al finalizar la instalación deberás reiniciar el kernel (menú Entorno de ejecución -&gt; Reiniciar Entorno de ejecución).</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">!</span>pip install fastai -Uq
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Cargamos a continuación las librerías que necesitaremos en esta práctica.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">fastai.basics</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">fastai.vision</span> <span class="kn">import</span> <span class="n">models</span>
+<span class="kn">from</span> <span class="nn">fastai.vision.all</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">fastai.metrics</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">fastai.data.all</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">fastai.callback</span> <span class="kn">import</span> <span class="o">*</span>
+
+
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">random</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Dataset">
+<a class="anchor" href="#Dataset" aria-hidden="true"><span class="octicon octicon-link"></span></a>Dataset<a class="anchor-link" href="#Dataset"> </a>
+</h2>
+<p>Para esta práctica vamos a usar como dataset el proporcionado en el trabajo <a href="https://link.springer.com/article/10.1007/s11119-020-09736-0">Deep neural networks for grape bunch segmentation in natural images from a consumer‑grade camera</a>. Este dataset dedicado a la segmentación de racimos de uva consta de 66 imágenes de entrenamiento y 14 de test con 5 categorías: background, leaves, wood, pole, y grape. Los siguientes comandos descargan y descomprimen dicho dataset. En este notebook vamos a usar solo dos clases: background y grape.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%capture</span>
+<span class="err">!</span><span class="n">wget</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="o">.</span><span class="n">dropbox</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">s</span><span class="o">/</span><span class="n">uknzc914w311web</span><span class="o">/</span><span class="n">dataset</span><span class="o">.</span><span class="n">zip</span><span class="err">?</span><span class="n">dl</span><span class="o">=</span><span class="mi">1</span> <span class="o">-</span><span class="n">O</span> <span class="n">dataset</span><span class="o">.</span><span class="n">zip</span>
+<span class="err">!</span><span class="n">unzip</span> <span class="n">dataset</span><span class="o">.</span><span class="n">zip</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Vamos a explorar el contenido de este dataset. Para ello vamos a crear un objeto Path que apunta al directorio que acabamos de crear.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s1">'dataset/'</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Como en la práctica anterior, podemos ver el contenido de este directorio usando el comando <code>ls()</code>.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">path</span><span class="o">.</span><span class="n">ls</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Si exploráis el directorio podréis ver que hay dos carpetas llamadas Images y Labels. La carpeta Images contiene las imágenes del dataset, y la carpeta Labels contiene las en forma de máscara. Para cada imagen, hay un fichero de anotación siguiendo la siguiente nomenclatura: si la imagen se llama color_xxx.jpg, su fichero de anotación es gt_xxx.png. El dataset está partido en entrenamiento y test como puede verse en las carpetas Images y Labels. Además, se proporcionan dos ficheros txt que van a contener las clases de los objetos que utilizaremos en esta práctica. El fichero codes.txt contiene solo dos clases (background y grape), mientras que el fichero codesAll.txt contiene todas las posibles clases.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="p">(</span><span class="n">path</span><span class="o">/</span><span class="s1">'Images'</span><span class="p">)</span><span class="o">.</span><span class="n">ls</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="p">(</span><span class="n">path</span><span class="o">/</span><span class="s1">'Images/train'</span><span class="p">)</span><span class="o">.</span><span class="n">ls</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="p">(</span><span class="n">path</span><span class="o">/</span><span class="s1">'Labels/train'</span><span class="p">)</span><span class="o">.</span><span class="n">ls</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Definiciones-previas">
+<a class="anchor" href="#Definiciones-previas" aria-hidden="true"><span class="octicon octicon-link"></span></a>Definiciones previas<a class="anchor-link" href="#Definiciones-previas"> </a>
+</h2>
+<p>El proceso para entrenar nuestro modelo va a ser similar al visto en la práctica 1 para crear un modelo de clasificación. Sin embargo, para cargar nuestro dataset será necesario dar unas definiciones previas. Estas definiciones son necesarias para ajustar la carga del datos a la estructura de nuestro dataset.</p>
+<p>En primer lugar vamos a definir los paths donde se van a encontrar nuestras imágenes y sus etiquetas.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">path_images</span> <span class="o">=</span> <span class="n">path</span><span class="o">/</span><span class="s2">"Images"</span>
+<span class="n">path_labels</span> <span class="o">=</span> <span class="n">path</span><span class="o">/</span><span class="s2">"Labels"</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>A continuación definimos el nombre que va a tener nuestra carpeta de test.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">test_name</span> <span class="o">=</span> <span class="s2">"test"</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Seguidamente definimos una función que dado el path de una imagen nos devuelve el path de su anotación.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">get_y_fn</span> <span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"Images"</span><span class="p">,</span><span class="s2">"Labels"</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"color"</span><span class="p">,</span><span class="s2">"gt"</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">".jpg"</span><span class="p">,</span><span class="s2">".png"</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Seguidamente cargamos las clases que pueden tener los píxeles de nuestra imágenes y lo almacenamos en una lista <code>codes</code>.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">codes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">path</span><span class="o">/</span><span class="s1">'codes.txt'</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">codes</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Podemos ahora ver alguna de las imágenes de nuestro dataset.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">img_f</span> <span class="o">=</span> <span class="n">path_images</span><span class="o">/</span><span class="s1">'train/color_206.jpg'</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">PILImage</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">img_f</span><span class="p">)</span>
+<span class="n">img</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Y también la anotación asociada.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">mask</span> <span class="o">=</span> <span class="n">PILMask</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">get_y_fn</span><span class="p">(</span><span class="n">img_f</span><span class="p">))</span>
+<span class="n">mask</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Como podemos ver en la imagen anterior tenemos una máscara donde cada tipo de objeto de nuestra imagen tiene un color distinto.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Partición-del-dataset">
+<a class="anchor" href="#Partici%C3%B3n-del-dataset" aria-hidden="true"><span class="octicon octicon-link"></span></a>Partición del dataset<a class="anchor-link" href="#Partici%C3%B3n-del-dataset"> </a>
+</h2>
+<p>Como en cualquier problema de machine learning debemos partir nuestro dataset en entrenamiento y test. En nuestro caso los datos ya están separados por lo que vamos a definir una función que nos permite diferenciarlos gracias a la estructura de carpetas que usamos.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">ParentSplitter</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">name</span><span class="o">==</span><span class="n">test_name</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Data-augmentation">
+<a class="anchor" href="#Data-augmentation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Data augmentation<a class="anchor-link" href="#Data-augmentation"> </a>
+</h2>
+<p>Al igual que con los modelos definidos en prácticas anteriores podemos usar técnicas de aumento de datos, para lo que usaremos la librería Albumentations. Recordar que dichas transformaciones no deben aplicarse solo a la imagen sino también a su anotación. Para ello vamos a definir una clase que hereda de la clase <code>ItemTransform</code> y que nos va a permitir realizar transformaciones sobre pares (imagen,máscara).</p>
+<p>La clase <code>ItemTransform</code> tiene un método <code>encodes</code> que es el encargado de realizar la transformación sobre su entrada <code>x</code> que en este caso será un par (imagen,máscara). Además el constructor de la clase que vamos a definir recibirá como parámetro las transformaciones a aplicar.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">albumentations</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Compose</span><span class="p">,</span>
+    <span class="n">OneOf</span><span class="p">,</span>
+    <span class="n">ElasticTransform</span><span class="p">,</span>
+    <span class="n">GridDistortion</span><span class="p">,</span> 
+    <span class="n">OpticalDistortion</span><span class="p">,</span>
+    <span class="n">HorizontalFlip</span><span class="p">,</span>
+    <span class="n">Rotate</span><span class="p">,</span>
+    <span class="n">Transpose</span><span class="p">,</span>
+    <span class="n">CLAHE</span><span class="p">,</span>
+    <span class="n">ShiftScaleRotate</span>
+<span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">SegmentationAlbumentationsTransform</span><span class="p">(</span><span class="n">ItemTransform</span><span class="p">):</span>
+    <span class="n">split_idx</span> <span class="o">=</span> <span class="mi">0</span>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">aug</span><span class="p">):</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">aug</span> <span class="o">=</span> <span class="n">aug</span>
+        
+    <span class="k">def</span> <span class="nf">encodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">img</span><span class="p">,</span><span class="n">mask</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="n">aug</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aug</span><span class="p">(</span><span class="n">image</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">img</span><span class="p">),</span> <span class="n">mask</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mask</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">PILImage</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">aug</span><span class="p">[</span><span class="s2">"image"</span><span class="p">]),</span> <span class="n">PILMask</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">aug</span><span class="p">[</span><span class="s2">"mask"</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>En nuestro caso vamos a utilizar solo flips horizontales, rotaciones, y una operación que aplica una pequeña distorsión a la imagen. Dichas transformaciones se aplicarán de manera secuencia y de manera aleatoria.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">transforms</span><span class="o">=</span><span class="n">Compose</span><span class="p">([</span><span class="n">HorizontalFlip</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="mf">0.5</span><span class="p">),</span>
+                    <span class="n">Rotate</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="mf">0.40</span><span class="p">,</span><span class="n">limit</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span><span class="n">GridDistortion</span><span class="p">()</span>
+                    <span class="p">],</span><span class="n">p</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Por último construimos un objeto de la clase definida anteriormente.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">transformPipeline</span><span class="o">=</span><span class="n">SegmentationAlbumentationsTransform</span><span class="p">(</span><span class="n">transforms</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>También va a ser necesario realizar una transformación adicional sobre las máscaras. Las máscaras contienen píxeles con 7 valores distintos (255: grape, 150: leaves, 76: pole, 74: pole, 29: wood, 25: wood, 0: background). Como vamos a trabajar únicamente con las clases grape y background, los píxeles del resto de clases deberán estar a 0 (es decir los vamos a considerar como background). Además, los números de las clases deben ser 0,1,2,... Es por esto que es necesario cambiar todos los píxeles con valor 255 a valor 1. Para realizar estas transformaciones definimos la siguiente clase.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">class</span> <span class="nc">TargetMaskConvertTransform</span><span class="p">(</span><span class="n">ItemTransform</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+        <span class="k">pass</span>
+    <span class="k">def</span> <span class="nf">encodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">img</span><span class="p">,</span><span class="n">mask</span> <span class="o">=</span> <span class="n">x</span>
+        
+        <span class="c1">#Convert to array</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+        
+        <span class="n">mask</span><span class="p">[</span><span class="n">mask</span><span class="o">!=</span><span class="mi">255</span><span class="p">]</span><span class="o">=</span><span class="mi">0</span>
+        <span class="c1"># Change 255 for 1</span>
+        <span class="n">mask</span><span class="p">[</span><span class="n">mask</span><span class="o">==</span><span class="mi">255</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span>
+        
+        
+        <span class="c1"># Back to PILMask</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">PILMask</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">img</span><span class="p">,</span> <span class="n">mask</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Dataloader">
+<a class="anchor" href="#Dataloader" aria-hidden="true"><span class="octicon octicon-link"></span></a>Dataloader<a class="anchor-link" href="#Dataloader"> </a>
+</h2>
+<p>Ya estamos listos para definir nuestro <code>DataBlock</code> y seguidamente nuestro <code>DataLoader</code>. Nuestro <code>DataBlock</code> se define del siguiente modo.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">trainDB</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="p">(</span><span class="n">ImageBlock</span><span class="p">,</span> <span class="n">MaskBlock</span><span class="p">(</span><span class="n">codes</span><span class="p">)),</span>
+                   <span class="n">get_items</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">get_image_files</span><span class="p">,</span><span class="n">folders</span><span class="o">=</span><span class="p">[</span><span class="s1">'train'</span><span class="p">]),</span>
+                   <span class="n">get_y</span><span class="o">=</span><span class="n">get_y_fn</span><span class="p">,</span>
+                   <span class="n">splitter</span><span class="o">=</span><span class="n">RandomSplitter</span><span class="p">(</span><span class="n">valid_pct</span><span class="o">=</span><span class="mf">0.2</span><span class="p">),</span>
+                   <span class="n">item_tfms</span><span class="o">=</span><span class="p">[</span><span class="n">Resize</span><span class="p">((</span><span class="mi">480</span><span class="p">,</span><span class="mi">640</span><span class="p">)),</span> <span class="n">TargetMaskConvertTransform</span><span class="p">(),</span> <span class="n">transformPipeline</span><span class="p">],</span>
+                   <span class="n">batch_tfms</span><span class="o">=</span><span class="n">Normalize</span><span class="o">.</span><span class="n">from_stats</span><span class="p">(</span><span class="o">*</span><span class="n">imagenet_stats</span><span class="p">)</span>
+                  <span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Vamos a explicar cada una de las componentes anteriores:</p>
+<ul>
+<li>
+<code>blocks=(ImageBlock, MaskBlock(codes))</code>. En este caso tenemos que la entrada de nuestro modelo va a ser una imagen (representada mediante un <code>ImageBlock</code>) y su salida es una máscara (representado mediante <code>MaskBlock</code>) cuyos posibles valores son aquellos proporcionados por la lista de clases almacenada en la variable <code>codes</code>.</li>
+<li>
+<code>get_items=partial(get_image_files,folders=['train'])</code>. El parámetro <code>get_items</code> sirve para indicar cómo cargar los datos de nuestro dataset. Para esto vamos a usar la función <code>get_image_files</code> que devuelve los paths de las imágenes que se encuentran dentro de la carpeta <code>folders</code> (en nuestro caso la carpeta <code>train</code>). </li>
+<li>
+<code>get_y=get_y_fn</code>. El parámetro <code>get_y</code> sirve para indicar cómo obtener la anotación asociada con una entrada (recordar que una entrada va a ser una imagen definida a partir de su path). Para esto tenemos la función <code>get_y_fn</code> definida anteriormente. </li>
+<li>
+<code>splitter=RandomSplitter(valid_pct=0.2)</code>. Como siempre debemos partir nuestro dataset para tener un conjunto de validación de cara a seleccionar nuestros hiperparámetros. En este caso partimos el conjunto de entrenamiento usando un porcentaje 80/20.</li>
+<li>
+<code>item_tfms=[Resize((480,640)), TargetMaskConvertTransform(), transformPipeline]</code>. En el parámetro <code>item_tfms</code> indicamos las transformaciones que vamos a aplicar a nuestras imágenes y sus correspondientes máscaras. Además de las explicadas anteriormente vamos a reescalar las imágenes al tamaño 480x640.</li>
+<li>
+<code>batch_tfms=Normalize.from_stats(*imagenet_stats)</code>. En el parámetro <code>batch_tfms</code> indicamos las transformaciones que se realizan a nivel de batch. En este caso como en nuestro modelo utilizaremos un backbone preentrenado en ImageNet debemos normalizar las imágenes para que tengan la escala de esas imágenes. </li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Con las explicaciones anteriores en sencillo comprender como definimos el siguiente <code>DataBlock</code> que nos servirá para evaluar nuestros modelos en el conjunto de test.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">testDB</span> <span class="o">=</span> <span class="n">DataBlock</span><span class="p">(</span><span class="n">blocks</span><span class="o">=</span><span class="p">(</span><span class="n">ImageBlock</span><span class="p">,</span> <span class="n">MaskBlock</span><span class="p">(</span><span class="n">codes</span><span class="p">)),</span>
+                   <span class="n">get_items</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span><span class="n">get_image_files</span><span class="p">,</span><span class="n">folders</span><span class="o">=</span><span class="p">[</span><span class="s1">'train'</span><span class="p">,</span><span class="s1">'test'</span><span class="p">]),</span>
+                   <span class="n">get_y</span><span class="o">=</span><span class="n">get_y_fn</span><span class="p">,</span>
+                   <span class="n">splitter</span><span class="o">=</span><span class="n">FuncSplitter</span><span class="p">(</span><span class="n">ParentSplitter</span><span class="p">),</span>
+                   <span class="n">item_tfms</span><span class="o">=</span><span class="p">[</span><span class="n">Resize</span><span class="p">((</span><span class="mi">480</span><span class="p">,</span><span class="mi">640</span><span class="p">)),</span> <span class="n">TargetMaskConvertTransform</span><span class="p">(),</span> <span class="n">transformPipeline</span><span class="p">],</span>
+                   <span class="n">batch_tfms</span><span class="o">=</span><span class="n">Normalize</span><span class="o">.</span><span class="n">from_stats</span><span class="p">(</span><span class="o">*</span><span class="n">imagenet_stats</span><span class="p">)</span>
+                  <span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Ahora ya podemos definir nuestros <code>Dataloaders</code> indicando el path donde se encuentran las imágenes y el batch size que vamos a utilizar.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">bs</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">trainDLS</span> <span class="o">=</span> <span class="n">trainDB</span><span class="o">.</span><span class="n">dataloaders</span><span class="p">(</span><span class="n">path_images</span><span class="p">,</span><span class="n">bs</span><span class="o">=</span><span class="n">bs</span><span class="p">)</span>
+<span class="n">testDLS</span> <span class="o">=</span> <span class="n">testDB</span><span class="o">.</span><span class="n">dataloaders</span><span class="p">(</span><span class="n">path_images</span><span class="p">,</span><span class="n">bs</span><span class="o">=</span><span class="n">bs</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Como siempre es conveniente mostrar un batch para comprobar que se están cargando los datos correctamente.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">trainDLS</span><span class="o">.</span><span class="n">show_batch</span><span class="p">(</span><span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">9</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Definición-de-modelo">
+<a class="anchor" href="#Definici%C3%B3n-de-modelo" aria-hidden="true"><span class="octicon octicon-link"></span></a>Definición de modelo<a class="anchor-link" href="#Definici%C3%B3n-de-modelo"> </a>
+</h2>
+<p>Ya podemos definir nuestro modelo y entrenarlo como hemos hecho en prácticas anteriores. Para ello vamos a crear un <code>Learner</code> mediante la función <code>unet_learner</code> a la cual le tenemos que proporcionar el <code>DataLoader</code> el backbone que vamos a utilizar (en este caso usaremos un modelo Resnet-18) y las métricas <a href="https://docs.fast.ai/metrics.html#Dice">Dice</a> y <a href="https://docs.fast.ai/metrics.html#JaccardCoeff">Jaccard</a> que emplearemos para evaluar nuestro modelo.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span> <span class="o">=</span> <span class="n">unet_learner</span><span class="p">(</span><span class="n">trainDLS</span><span class="p">,</span><span class="n">resnet18</span><span class="p">,</span><span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="n">Dice</span><span class="p">(),</span><span class="n">JaccardCoeff</span><span class="p">()])</span><span class="o">.</span><span class="n">to_fp16</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Por último entrenamos nuestro modelo.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">fit_one_cycle</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mf">3e-3</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Una vez entrenado el modelo lo vamos a guardar para usarlo posteriormente. Lo primero que hacemos es extraer el modelo del <code>Learner</code> y caragarlo en la CPU.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">aux</span><span class="o">=</span><span class="n">learn</span><span class="o">.</span><span class="n">model</span>
+<span class="n">aux</span><span class="o">=</span><span class="n">aux</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Ahora vamos a guardarlo, para lo cual es necesario cargar una imagen que le servirá como referencia para realizar las transformaciones necesarias. Para ello es necesario normalizar la imagen para que sigan el estándar de ImageNet.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">torchvision.transforms</span> <span class="k">as</span> <span class="nn">transforms</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">PILImage</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">path_images</span><span class="o">/</span><span class="s1">'train/color_206.jpg'</span><span class="p">)</span>
+<span class="n">transformer</span><span class="o">=</span><span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span><span class="p">([</span><span class="n">transforms</span><span class="o">.</span><span class="n">Resize</span><span class="p">((</span><span class="mi">480</span><span class="p">,</span><span class="mi">640</span><span class="p">)),</span>
+                                <span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span>
+                                <span class="n">transforms</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span>
+                                                    <span class="p">[</span><span class="mf">0.485</span><span class="p">,</span> <span class="mf">0.456</span><span class="p">,</span> <span class="mf">0.406</span><span class="p">],</span>
+                                                    <span class="p">[</span><span class="mf">0.229</span><span class="p">,</span> <span class="mf">0.224</span><span class="p">,</span> <span class="mf">0.225</span><span class="p">])])</span>
+<span class="n">img</span><span class="o">=</span><span class="n">transformer</span><span class="p">(</span><span class="n">img</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">img</span><span class="o">=</span><span class="n">img</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
+
+<span class="n">traced_cell</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">aux</span><span class="p">,</span> <span class="p">(</span><span class="n">img</span><span class="p">))</span>
+<span class="n">traced_cell</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">"unet.pth"</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Evaluando-el-modelo">
+<a class="anchor" href="#Evaluando-el-modelo" aria-hidden="true"><span class="octicon octicon-link"></span></a>Evaluando el modelo<a class="anchor-link" href="#Evaluando-el-modelo"> </a>
+</h2>
+<p>Al igual que vimos para los modelos de clasificación, la métrica mostrada durante el proceso de entrenamiento se refiere al conjunto de validación, mientras que nos interesa saber el resultado obtenido para el conjunto de test.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Para ello debemos modificar el dataloader del objeto <code>Learn</code> que hemos entrenado anteriormente.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">dls</span> <span class="o">=</span> <span class="n">testDLS</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Por último evaluamos nuestro modelo usando el método <code>validate()</code>. En este caso el método <code>validate()</code> devuelve tres valores, el valor de la pérdida, y el valor de las métricas definidas anteriormente con respecto al conjunto de test.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Inferencia">
+<a class="anchor" href="#Inferencia" aria-hidden="true"><span class="octicon octicon-link"></span></a>Inferencia<a class="anchor-link" href="#Inferencia"> </a>
+</h2>
+<p>Vamos a ver cómo usar el modelo ante una nueva imagen. Para ello lo primero que vamos a hacer es cargar el modelo. El modelo inicialmente lo cargaremos en la CPU, pero posteriormente si hay una GPU disponible la usaremos para inferencia.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">"cuda"</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">"cpu"</span><span class="p">)</span> 
+<span class="n">model</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">"unet.pth"</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span>
+<span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>El siguiente paso es cargar la imagen, para lo que usaremos la librería <code>PIL</code>.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">PIL</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">img</span> <span class="o">=</span> <span class="n">PIL</span><span class="o">.</span><span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">'dataset/Images/test/color_154.jpg'</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>La siguiente instrucción permite mostrar la imagen que acabamos de cargar.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">img</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Ya estaríamos listos para relizar las predicciones sobre la imagen. Sin embargo, cabe recordar que primero debemos reescalar las imágenes y normalizarlas.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">torchvision.transforms</span> <span class="k">as</span> <span class="nn">transforms</span>
+<span class="k">def</span> <span class="nf">transform_image</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+    <span class="n">my_transforms</span> <span class="o">=</span> <span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span><span class="p">([</span><span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span>
+                                        <span class="n">transforms</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span>
+                                            <span class="p">[</span><span class="mf">0.485</span><span class="p">,</span> <span class="mf">0.456</span><span class="p">,</span> <span class="mf">0.406</span><span class="p">],</span>
+                                            <span class="p">[</span><span class="mf">0.229</span><span class="p">,</span> <span class="mf">0.224</span><span class="p">,</span> <span class="mf">0.225</span><span class="p">])])</span>
+    <span class="n">image_aux</span> <span class="o">=</span> <span class="n">image</span>
+    <span class="k">return</span> <span class="n">my_transforms</span><span class="p">(</span><span class="n">image_aux</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>El siguiente paso consiste en transformar la imagen.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">image</span> <span class="o">=</span> <span class="n">transforms</span><span class="o">.</span><span class="n">Resize</span><span class="p">((</span><span class="mi">480</span><span class="p">,</span><span class="mi">640</span><span class="p">))(</span><span class="n">img</span><span class="p">)</span>
+<span class="n">tensor</span> <span class="o">=</span> <span class="n">transform_image</span><span class="p">(</span><span class="n">image</span><span class="o">=</span><span class="n">image</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Ahora ya podemos realizar pasarle el objeto construido anteriormente al modelo para realizar la predicción.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+    <span class="n">outputs</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">tensor</span><span class="p">)</span>
+
+<span class="n">outputs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Ahora almacenamos el resultado en un array y convertimos el índice asociado con la clase grape (que era 1) al valor 255.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">outputs</span><span class="o">.</span><span class="n">cpu</span><span class="p">())</span>
+<span class="n">mask</span><span class="p">[</span><span class="n">mask</span><span class="o">==</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="mi">255</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>La predicción devuelta por el modelo es un vector de tamaño 480x640 por lo que tendremos que ponerla en forma de matriz.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">mask</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">mask</span><span class="p">,(</span><span class="mi">480</span><span class="p">,</span><span class="mi">640</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Con esto ya podemos mostrar la máscara generada.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">mask</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">'uint8'</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Podemos compararla con la máscara real.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">PIL</span><span class="o">.</span><span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">'dataset/Labels/test/gt_154.png'</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Como vemos el modelo se aproxima bastante, pero la segmentación no es excesivamente buena. En la práctica veremos cómo crear mejores modelos.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+
+
+  </div><!-- from https://github.com/utterance/utterances -->
+<script src="https://utteranc.es/client.js"
+        repo="AP2122/aprendizajeprofundo2122"
+        issue-term="title"
+        label="blogpost-comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script><a class="u-url" href="/aprendizajeprofundo2122/practica/2022/02/22/practica3-segmentacion-semantica.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/aprendizajeprofundo2122/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/aprendizajeprofundo2122/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/aprendizajeprofundo2122/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>Página del curso.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/joheras" target="_blank" title="joheras"><svg class="svg-icon grey"><use xlink:href="/aprendizajeprofundo2122/assets/minima-social-icons.svg#github"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
