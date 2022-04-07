@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Modelos para datos estructurados | Aprendizaje Profundo 21/22</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Modelos para datos estructurados" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Creando modelos para datos estructurados usando FastAI." />
+<meta property="og:description" content="Creando modelos para datos estructurados usando FastAI." />
+<link rel="canonical" href="https://ap2122.github.io/aprendizajeprofundo2122/practica/2022/03/14/practica5-datos-estructurados.html" />
+<meta property="og:url" content="https://ap2122.github.io/aprendizajeprofundo2122/practica/2022/03/14/practica5-datos-estructurados.html" />
+<meta property="og:site_name" content="Aprendizaje Profundo 21/22" />
+<meta property="og:image" content="https://ap2122.github.io/aprendizajeprofundo2122/images/chart-preview.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2022-03-14T00:00:00-05:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://ap2122.github.io/aprendizajeprofundo2122/images/chart-preview.png" />
+<meta property="twitter:title" content="Modelos para datos estructurados" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2022-03-14T00:00:00-05:00","datePublished":"2022-03-14T00:00:00-05:00","description":"Creando modelos para datos estructurados usando FastAI.","headline":"Modelos para datos estructurados","image":"https://ap2122.github.io/aprendizajeprofundo2122/images/chart-preview.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://ap2122.github.io/aprendizajeprofundo2122/practica/2022/03/14/practica5-datos-estructurados.html"},"url":"https://ap2122.github.io/aprendizajeprofundo2122/practica/2022/03/14/practica5-datos-estructurados.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/aprendizajeprofundo2122/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://ap2122.github.io/aprendizajeprofundo2122/feed.xml" title="Aprendizaje Profundo 21/22" /><link rel="shortcut icon" type="image/x-icon" href="/aprendizajeprofundo2122/images/favicon.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head>
+<body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/aprendizajeprofundo2122/">Aprendizaje Profundo 21/22</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/aprendizajeprofundo2122/about/">About Me</a><a class="page-link" href="/aprendizajeprofundo2122/search/">Search</a><a class="page-link" href="/aprendizajeprofundo2122/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Modelos para datos estructurados</h1><p class="page-description">Creando modelos para datos estructurados usando FastAI.</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2022-03-14T00:00:00-05:00" itemprop="datePublished">
+        Mar 14, 2022
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      5 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/aprendizajeprofundo2122/categories/#practica">practica</a>
+        
+      
+      </p>
+    
+
+    
+      
+        <div class="pb-5 d-flex flex-justify-center">
+          <div class="px-2">
+
+    <a href="https://github.com/AP2122/aprendizajeprofundo2122/tree/master/_notebooks/2022-03-14-practica5-datos-estructurados.ipynb" role="button" target="_blank">
+<img class="notebook-badge-image" src="/aprendizajeprofundo2122/assets/badges/github.svg" alt="View On GitHub">
+    </a>
+</div>
+
+          
+          <div class="px-2">
+    <a href="https://colab.research.google.com/github/AP2122/aprendizajeprofundo2122/blob/master/_notebooks/2022-03-14-practica5-datos-estructurados.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/aprendizajeprofundo2122/assets/badges/colab.svg" alt="Open In Colab"/>
+    </a>
+</div>
+          
+        </div>
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul id="toc" class="section-nav">
+<li class="toc-entry toc-h2"><a href="#Librerías">Librerías </a></li>
+<li class="toc-entry toc-h2"><a href="#Dataset">Dataset </a></li>
+<li class="toc-entry toc-h2"><a href="#Carga-de-datos">Carga de datos </a></li>
+<li class="toc-entry toc-h2"><a href="#Entrenando-un-modelo">Entrenando un modelo </a></li>
+<li class="toc-entry toc-h2"><a href="#Evaluación">Evaluación </a></li>
+</ul><!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2022-03-14-practica5-datos-estructurados.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>En este notebook se muestra cómo crear un modelo de clasificación para un dataset estructurado que contiene características categóricas usando una red neuronal. Para ello usaremos la librería <a href="https://www.fast.ai/">FastAI</a>.</p>
+<p>Aunque para esta práctica no es necesario el uso de GPU, las pruebas serán más rápidas si tienes esta opción activada.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Librerías">
+<a class="anchor" href="#Librer%C3%ADas" aria-hidden="true"><span class="octicon octicon-link"></span></a>Librerías<a class="anchor-link" href="#Librer%C3%ADas"> </a>
+</h2>
+<p>Comenzamos actualizando la librería FastAI. Al finalizar la instalación deberás reiniciar el kernel (menú Entorno de ejecución -&gt; Reiniciar Entorno de ejecución).</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">!</span>pip install fastai -Uq
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>     |████████████████████████████████| 188 kB 10.1 MB/s 
+     |████████████████████████████████| 56 kB 2.6 MB/s 
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Cargamos a continuación las librerías que necesitaremos en esta práctica que son la parte de datos estructurados de la librería fastAI y la librería pandas.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">fastai.tabular.all</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">random</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Dataset">
+<a class="anchor" href="#Dataset" aria-hidden="true"><span class="octicon octicon-link"></span></a>Dataset<a class="anchor-link" href="#Dataset"> </a>
+</h2>
+<p>Para este ejemplo vamos a usar el <a href="https://archive.ics.uci.edu/ml/datasets/Adult">Adult Data Set</a>. Con este dataset se pretende ser capaz de predecir si una persona cobra más de 50000 dolares al año a partir de las siguientes características:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'age'</span><span class="p">,</span><span class="s1">'workclass'</span><span class="p">,</span><span class="s1">'fnlwgt'</span><span class="p">,</span><span class="s1">'education'</span><span class="p">,</span>     
+          <span class="s1">'education-num'</span><span class="p">,</span><span class="s1">'marital-status'</span><span class="p">,</span>
+          <span class="s1">'occupation'</span><span class="p">,</span> <span class="s1">'relationship'</span><span class="p">,</span> <span class="s1">'race'</span><span class="p">,</span>
+          <span class="s1">'sex'</span><span class="p">,</span><span class="s1">'capital-gain'</span><span class="p">,</span><span class="s1">'capital-loss'</span><span class="p">,</span>
+          <span class="s1">'hours-per-week'</span><span class="p">,</span><span class="s1">'native-country'</span><span class="p">,</span><span class="s1">'income'</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Vamos a descargar el dataset usando los siguientes comandos. Debemos descargar tanto el conjunto de entrenamiento como el de test.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">!</span>wget https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data -O train.csv
+<span class="o">!</span>wget https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.test -O test.csv
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>--2022-04-07 10:01:48--  https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data
+Resolving archive.ics.uci.edu (archive.ics.uci.edu)... 128.195.10.252
+Connecting to archive.ics.uci.edu (archive.ics.uci.edu)|128.195.10.252|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 3974305 (3.8M) [application/x-httpd-php]
+Saving to: ‘train.csv’
+
+train.csv           100%[===================&gt;]   3.79M  3.23MB/s    in 1.2s    
+
+2022-04-07 10:01:50 (3.23 MB/s) - ‘train.csv’ saved [3974305/3974305]
+
+--2022-04-07 10:01:50--  https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.test
+Resolving archive.ics.uci.edu (archive.ics.uci.edu)... 128.195.10.252
+Connecting to archive.ics.uci.edu (archive.ics.uci.edu)|128.195.10.252|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 2003153 (1.9M) [application/x-httpd-php]
+Saving to: ‘test.csv’
+
+test.csv            100%[===================&gt;]   1.91M  1.85MB/s    in 1.0s    
+
+2022-04-07 10:01:52 (1.85 MB/s) - ‘test.csv’ saved [2003153/2003153]
+
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Si inspeccionais el fichero de test veremos que la primera línea no proporciona información útil, y además los valores de la columna del salario incluyen un punto. Los siguientes comandos se encargan de eliminar la primera línea del fichero y de eliminar los puntos.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">!</span>sed <span class="s1">'1d'</span> test.csv &gt; tmpfile<span class="p">;</span> mv tmpfile test.csv
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">!</span>sed <span class="s1">'s/\.//'</span> test.csv &gt; tmpfile<span class="p">;</span> mv tmpfile test.csv
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Carga-de-datos">
+<a class="anchor" href="#Carga-de-datos" aria-hidden="true"><span class="octicon octicon-link"></span></a>Carga de datos<a class="anchor-link" href="#Carga-de-datos"> </a>
+</h2>
+<p>Al igual que se trabajaba en la asignatura de aprendizaje automático pasamos a cargar ambos datasets.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_train</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">'train.csv'</span><span class="p">,</span><span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">names</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span>
+<span class="n">df_test</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">'test.csv'</span><span class="p">,</span><span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">names</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Para crear un modelo con datos estructurados en FastAI debemos:</p>
+<ul>
+<li>Indicar la columna que queremos predecir, es decir la variable dependiente.</li>
+<li>Las transformaciones que queremos aplicar a nuestro dataset. </li>
+<li>Las características que son categóricas y continuas.</li>
+</ul>
+<p>Nuestra variable dependiente va a ser el salario:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dep_var</span> <span class="o">=</span> <span class="s1">'income'</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Las transformaciones que vamos a aplicar nuestro dataset son:</p>
+<ul>
+<li>Categorizar las variables categoricas de manera que se use un embedding.</li>
+<li>Reemplazar aquellos valores que faltan en el dataset por la media del resto de valores de ese descriptor.</li>
+<li>Normalizar los datos. </li>
+</ul>
+<p>Esto se consigue definiendo la siguiente lista de transformaciones.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">procs</span> <span class="o">=</span> <span class="p">[</span><span class="n">Categorify</span><span class="p">,</span> <span class="n">FillMissing</span><span class="p">,</span><span class="n">Normalize</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Por último debemos indicar qué variables son continuas (números) o categóricas. De esto se encarga automáticamente la función <code>cont_cat_split</code>.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">cont</span><span class="p">,</span><span class="n">cat</span> <span class="o">=</span> <span class="n">cont_cat_split</span><span class="p">(</span><span class="n">df_train</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dep_var</span><span class="o">=</span><span class="n">dep_var</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Podemos ver a hora que realmente las variables continuas y categóricas han sido separadas de forma correcta.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">cat</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>['workclass',
+ 'education',
+ 'marital-status',
+ 'occupation',
+ 'relationship',
+ 'race',
+ 'sex',
+ 'native-country']</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">cont</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>['age',
+ 'fnlwgt',
+ 'education-num',
+ 'capital-gain',
+ 'capital-loss',
+ 'hours-per-week']</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Entrenando-un-modelo">
+<a class="anchor" href="#Entrenando-un-modelo" aria-hidden="true"><span class="octicon octicon-link"></span></a>Entrenando un modelo<a class="anchor-link" href="#Entrenando-un-modelo"> </a>
+</h2>
+<p>El proceso para entrenar un modelo es el mismo que hemos visto para los modelos de clasificación de imágenes y podemos usar toda la funcionalidad vista hasta ahora. Comenzamos definiendo un dataloader usando el método estático <code>from_df</code> de la clase <code>TabularDataLoaders</code>. Como siempre debemos definir un conjunto de validación, para ello debemos indicar los índices del dataset que tomaremos como conjunto de validación. En este caso vamos a tomar un 20% de los índices de manera aleatoria.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dlsTrain</span> <span class="o">=</span> <span class="n">TabularDataLoaders</span><span class="o">.</span><span class="n">from_df</span><span class="p">(</span><span class="n">df_train</span><span class="p">,</span><span class="s1">'.'</span><span class="p">,</span><span class="n">procs</span><span class="o">=</span><span class="n">procs</span><span class="p">,</span>
+                                <span class="n">cat_names</span><span class="o">=</span><span class="n">cat</span><span class="p">,</span><span class="n">cont_names</span><span class="o">=</span><span class="n">cont</span><span class="p">,</span><span class="n">y_names</span><span class="o">=</span><span class="s1">'income'</span><span class="p">,</span>
+                                <span class="n">valid_idx</span><span class="o">=</span><span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">df_train</span><span class="p">)),</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_train</span><span class="p">)</span><span class="o">*</span><span class="mf">0.2</span><span class="p">)),</span><span class="n">bs</span><span class="o">=</span><span class="mi">64</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Ahora definimos nuestro learner que va a ser una red neuronal, a la cual le tenemos que indicar el número de capas y neuronas con las que queremos trabajar. En este caso usaremos una red neuronal con dos capas ocultas la primera con 500 neuronas y la segunda con 250.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span> <span class="o">=</span> <span class="n">tabular_learner</span><span class="p">(</span><span class="n">dlsTrain</span><span class="p">,</span> <span class="n">layers</span><span class="o">=</span><span class="p">[</span><span class="mi">500</span><span class="p">,</span><span class="mi">250</span><span class="p">],</span><span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="n">accuracy</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Podemos ver la estructura del modelo que acabamos de construir.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">model</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>TabularModel(
+  (embeds): ModuleList(
+    (0): Embedding(10, 6)
+    (1): Embedding(17, 8)
+    (2): Embedding(8, 5)
+    (3): Embedding(16, 8)
+    (4): Embedding(7, 5)
+    (5): Embedding(6, 4)
+    (6): Embedding(3, 3)
+    (7): Embedding(43, 13)
+  )
+  (emb_drop): Dropout(p=0.0, inplace=False)
+  (bn_cont): BatchNorm1d(6, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  (layers): Sequential(
+    (0): LinBnDrop(
+      (0): Linear(in_features=58, out_features=500, bias=False)
+      (1): ReLU(inplace=True)
+      (2): BatchNorm1d(500, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    )
+    (1): LinBnDrop(
+      (0): Linear(in_features=500, out_features=250, bias=False)
+      (1): ReLU(inplace=True)
+      (2): BatchNorm1d(250, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    )
+    (2): LinBnDrop(
+      (0): Linear(in_features=250, out_features=2, bias=True)
+    )
+  )
+)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Podemos ver que tenemos un <code>TabularModel</code> con una serie de embeddings. La siguiente celda nos sirve para ver qué es lo que hace un <code>TabularModel</code>.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">??</span>TabularModel
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Como hemos dicho tenemos toda la batería de funciones que ya conocemos, así que vamos a buscar el learning rate más adecuado.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">lr_find</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>SuggestedLRs(valley=0.0006918309954926372)</pre>
+</div>
+
+</div>
+
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea ">
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAY8AAAEKCAYAAADq59mMAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAADh0RVh0U29mdHdhcmUAbWF0cGxvdGxpYiB2ZXJzaW9uMy4yLjIsIGh0dHA6Ly9tYXRwbG90bGliLm9yZy+WH4yJAAAgAElEQVR4nO3dd3iUVfr/8fc9yYSQkIRAQkvoIL0aELCh7ipWUFeBRUQX29p+67p8F7fY265rWV1UwILr6iJiQxfFhoJSJCCgdAgtFEkogfR2//6YCY4xhAzJ5JmZ3K/rmovMU2Y+hCF3zjnPc46oKsYYY4w/XE4HMMYYE3qseBhjjPGbFQ9jjDF+s+JhjDHGb1Y8jDHG+M2KhzHGGL9FOh2griQlJWmHDh2cjmGMMSFl+fLl2aqa7O95YVM8OnToQHp6utMxjDEmpIjI9hM5z7qtjDHG+M2KhzHGGL9Z8TDGGOO3sBnzqEpJSQmZmZkUFhY6HcUx0dHRpKam4na7nY5ijAkjYV08MjMziYuLo0OHDoiI03Hqnaqyf/9+MjMz6dixo9NxjDFhJKy7rQoLC2nevHmDLBwAIkLz5s0bdMvLGBMYYV08gAZbOCo09L+/MeFu+fYDfLP1QL2/b9gXj1DTpEkTALZt20bv3r0dTmOMCXZPfbqJh+euq/f3teLha/UseLI33NvU8+fqWU4nMsaYahUUlxETFVHv72vFo8LqWfD+7ZCzE1DPn+/fXusCMnnyZKZMmXL0+b333suDDz7IOeecw8CBA+nTpw/vvfdeta9RVlbGpEmTGDRoEH379mXq1KkAXH311bz77rtHjxs3btxxX8sYE14KSspo7Lbi4ZzP7oeSgp9uKynwbK+F0aNHM2vWjwVo1qxZTJgwgXfeeYcVK1Ywf/587rzzTqpbDvjFF18kISGBZcuWsWzZMqZPn87WrVuZOHEiM2bMACAnJ4dFixZx4YUX1iqvMSa0FJSUEe1AyyOsL9X1S06mf9traMCAAezbt4/du3eTlZVFYmIirVq14o477mDBggW4XC527drFDz/8QKtWrap8jY8//pjVq1cze/ZsT6ScHDZt2sS5557LzTffTFZWFm+99RaXX345kZH2T2pMQ1JQXEaMAy0P+0lTISHV22VVxfZauuKKK5g9ezZ79+5l9OjRvPbaa2RlZbF8+XLcbjcdOnSo9nJaVeWZZ57hvPPO+9m+q6++mv/85z/MnDmTl19+udZZjTGhpaCkjMY25uGgc+4Gd+OfbnM39myvpdGjRzNz5kxmz57NFVdcQU5ODi1atMDtdjN//ny2b69+UsvzzjuP5557jpKSEgA2btxIXl4eANdccw1PPfUUAD179qx1VmNMaCkodmbMw1oeFfpe6fnzs/s9XVUJqZ7CUbG9Fnr16sWRI0dISUmhdevWjBs3josvvpg+ffqQlpZG9+7dqz3/uuuuY9u2bQwcOBBVJTk5+ehAecuWLenRowejRo2qdU5jTGgpL1eKSssdaXlIdQO1oSQtLU0rr+exbt06evTo4VCi+pGfn0+fPn1YsWIFCQkJVR7TEL4PxjREeUWl9LpnHned350bz+x8Qq8hIstVNc3f86zbKoR9+umn9OjRg9tuu+2YhcMYE74KSsoAHGl5WLdVCPvFL35x3PESY0z4Kij2FI9ou8/DGGNMTVW0POwO8wAIlzGdE9XQ//7GhLOKlofdYV7HoqOj2b9/f4P9AVqxnkd0dLTTUYwxAXB0zMMu1a1bqampZGZmkpWV5XQUx1SsJGiMCT9HWx42YF633G63raBnjAlbTl5tFdbdVsYYE85szMMYY4zf8sO15SEiI0Rkg4hsFpHJVexvJyLzReRbEVktIhd4t3cQkQIRWel9PB/InMYYE4oKHWx5BGzMQ0QigCnAL4FMYJmIzFHVtT6H/QWYparPiUhPYC7Qwbtvi6r2D1Q+Y4wJdU5ebRXIlsdgYLOqZqhqMTATGFnpGAXivV8nALsDmMcYY8JKQUkZUREuIiPqfwQikO+YAvgukJHp3ebrXuAqEcnE0+q4zWdfR2931pcicnpVbyAiN4hIuoikN+TLcY0xDVNBcRnRbmeGrp0eMB8LzFDVVOAC4FURcQF7gHaqOgD4PfC6iMRXPllVp6lqmqqmJScn12twY4xxWkGxMwtBQWCLxy6grc/zVO82XxOBWQCquhiIBpJUtUhV93u3Lwe2ACcFMKsxxoScgpIyYqKcuV0vkMVjGdBVRDqKSBQwBphT6ZgdwDkAItIDT/HIEpFk74A7ItIJ6ApkBDCrMcaEnPziMkdm1IUAXm2lqqUiciswD4gAXlLVNSJyP5CuqnOAO4HpInIHnsHza1RVReQM4H4RKQHKgZtU9UCgshpjTCgqLCmjsUNjHgFt76jqXDwD4b7b7vb5ei1wahXnvQW8FchsxhgT6sK128oYY0wAOdltZcXDGGNCVGFJeF5tZYwxJoAKip0b87DiYYwxISq/uNTGPIwxxvinsKTcxjyMMcbUXGlZOcVl5Y5MighWPIwxJiQVlpYDEGMD5sYYY2oqv7gUgGgrHsYYY2qqsNjT8rBuK2OMMTVWsRCUdVsZY4ypsYpuK2t5GGOMqbGKloddqmuMMabGCq3byhhjjL/yiz3Fw+a2MsYYU2MFFcXDuq2MMcbUVEW3lbU8jDHG1Fi+tTyMMcb4y662MsYY47eCkjKiIl1EuMSR97fiYYwxIaiwuMyxy3TBiocxxoSk/OIyx8Y7wIqHMcaEpIISKx7GGGP8VFhS5thlumDFwxhjQlJYd1uJyAgR2SAim0VkchX724nIfBH5VkRWi8gFPvvu8p63QUTOC2ROY4wJNQXh2vIQkQhgCnA+0BMYKyI9Kx32F2CWqg4AxgDPes/t6X3eCxgBPOt9PWOMMXimJwnXlsdgYLOqZqhqMTATGFnpGAXivV8nALu9X48EZqpqkapuBTZ7X88YYwxh3PIAUoCdPs8zvdt83QtcJSKZwFzgNj/ONcaYBiucWx41MRaYoaqpwAXAqyJS40wicoOIpItIelZWVsBCGmNMsAnnlscuoK3P81TvNl8TgVkAqroYiAaSanguqjpNVdNUNS05ObkOoxtjTHAL55bHMqCriHQUkSg8A+BzKh2zAzgHQER64CkeWd7jxohIIxHpCHQFvglgVmOMCRklZeWUlqujxSMyUC+sqqUiciswD4gAXlLVNSJyP5CuqnOAO4HpInIHnsHza1RVgTUiMgtYC5QCt6hqWaCyGmNMKClweC0PCGDxAFDVuXgGwn233e3z9Vrg1GOc+xDwUCDzNTTl5YrLoRk4jTF1p9DhJWjB+QFzUwuqyro9h9mbU1jtcXlFpTz+8Qb63DuPJz7egKdxZ4wJVU4vBAUBbnmEo7JyPeb8+Qfyilm+/SBrdx9m7Z4ctmbnUVqmlKlSrso53Vty7yW9avX+qsr6vUd4f9Vu3l+9m50HCgDo0DyGIZ2ac3L7RFITY2gZ34jkuEZ89P1eHpu3gX1HiujeKo6nP9/M4cJS7r6op7VCjAlRR7utrHiEhpU7DzFm2mJmXDuYIZ2a/2RfblEp5z65gOzcIkSgY/NYOrdoQrQ7ApfAnkOFzFi0jV+dnErvlIQTev/ycmXS7NW8tSKTCJdwWpckbj2rC0cKS1mScYC53+1h5rKdPzuvf9umPHfVyQxs15SH/reOF77aSm5RKY9e1ofICGt8GhNqwn7MI5yoKo9+uI7CknKmL8j4WfF459tdZOcW8a9fD+Csbi2IbfTTb+3hwhJO/9t8nvxkIy9eM+iEMvxt3nreWpHJjWd24obTO9G8SaOj+647vRNl5cq2/Xn8kFPI3sOeR4fmsYzo1epoK+PPF/YgLtrNk59uZFt2Hm2aNqakrJySsnJiG0XSKj6aFvHRpDRtzBknJRETZR8RY4JNgXVbhY6Fm7JZknGATsmxfL5hHzv259OueQzgKSyvLt5G75R4LuzTGpGfdwfFR7u54YxOPDZvAyt3HqJ/26ZH9xUUl7H9QB7dW8X/7LwKM77eytQvMxg/pD2TR3Sv8j0iXELn5CZ0Tm5yzNcREf7fL7qS0DiSlxdtY39eMe4IIdLl4khRCT8cLqK4tByAhMZuxgxqy1VD2tO2WUxNv1XGmAArCIIBcyseNVBervx93npSExvzyrWDGf6PL3h1yTb+fKFnnselWw+w8Ydc/v6rvlX+UK8wYVgHXliYwROfbOTfv/FM1ZWTX8LVLy1lVWYOj1zWh7GD2/3svA+/28N9H6zl3J6eMZPq3qOmrjm1I9ec2vFn21WVQ/klrNt7mNeW7OCFr7YyfWEG5/dpzeQR3a2IGBMEKrqtnFyG1opHDXz4/V6+33WYJ67sR9tmMYzo1Yo3lu3k97/sRuOoCF5dvJ2mMW4u6dem2tdp0iiSm87szCMfrid92wE6JzfhqheXsumHXPq3bcpdb3+HAGO8BaSsXHll0TYe/Wg9A9o25emxAwK+2L2IkBgbxbDOSQzrnMTuQwW8umQ7M77exqdrf+CWs7pwwxmdiHZHUFBcxurMQ2zal/uTK7g6JTdhaKfmNiBvTIBUtDyirdsqeJWWlfP4xxvo1jKOkf09czNOGNaB/323h/dW7mJ4txZ8tGYvE0/rWKN/yPFD2zN9YQaPfLievKJSMrLzmHr1yQzt1JwbX13O5Le/A6B3SgJ3vf0d3+3K4cyTknlqdH9HPihtmjbmjyO6c9WQ9jz0v7U88clGZi/PJKGxm3V7DlNaXvVlv52SY7l6SHsuPzmVuGh3Pac2JrzZ1VYhYPbyTDKy85h+ddrR3/oHdUike6s4Zizaxu6cQspVueqU9jV6vZioSH47vAsPfLCWaLeLlyYM4rSuSQBMHX/y0QLiEmgW24hnxg7gor5Vj6PUp5SmjXl23Ml8tSmbJz7ZQKPICG48sxMD2ibSs008UZGeq7bKVVm0eT8zFm3j3vfX8ti8DYzo3ZqL+7Xm1C5JuO3qLmNq7cduK+d+hFvxqMaGvUd49KP1DGzXlF/0aHF0u4gwYVgH7nr7O7btz+Osbi2ODp7XxLhT2rElK5eR/dpwis9VW9HuCKaOP5k/vf0dsY0i+cO53UiICa7f2k/rmnS02B3LqAEpjBqQwqqdh3ht6XY+/H4vb63IpFlsFJcNSGHSiG40irS1vYw5URU3CTaKdO6XMSsex7B9fx5XvbiUqAgXT40e8LPf/Ef1T+GRues4XFjK+KE1a3VUiHZH8PClfY6574nR/U84dzDp17Yp/do25YFRvflyQxbvrdzNC19tZfWuHKaPTwu6wmhMqCgsKSPa7XJ0XNH6EKqwJ6eAcS8spbSsnNeuO6XKVkXjqAhuOKMTA9s15cyuNh18dRpFRnBur1ZMGTeQf47pz8odh7j8+UXsPJDvdDRjQlJBcZnj92BZy6OSHfvzuXbGNxzKL+H160+ha8u4Yx5769ldufXsrvWYLvSN7J9Cy/hobvh3Opc9t4jrTuuIO8KFSyAywkXTGDfNYqJo1iTK82dslN0Fb0wlBSXOruUBVjwAKCot4+M1P/DGsp18tTmbaLeLGdcOpm9q0+OfbPw2pFNz3vrtMCa+ks4jH64/7vGJMW6SmjRi/ND2jB/S3vGLB4xxWkGxp9vKSQ2+eGzfn8eoKV9zML+ElKaNueMXJ3FFWiptmjZ2OlpY69oyjvl/GE5ecSlaDmWqlJSVcyi/hAN5xRzML2Z/bhH784rZn1vM2j2Hufu9NazYfpCHL+vjeJPdGCcVlFi3lePaJsZwYd/W/LJnK07rkhTwm/DMjyJcQnyle0BaxkdXeWx5ufLsF5t5/JONrNtzhOfHn0zHpNj6iGlM0HF6CVqw4oHLJTw4quorn0zwcLmEW8/uSt/Uptw+81su+OdCzu/TilH9UxjWubmNi5gGJb+kjITGzl6t2OCLhwktZ5yUzAe3ncYzn21m7vd7eHvFLpLjGnHZwBSuGdaB1gnW3WjCX2FxGa3iGx3/wACy4mFCTmpiDH/7VV/uG9mL+ev38c63u5i+IIMXF27lwr6tuf70Tie8ZooxocDGPIyphWh3BOf3ac35fVqz80A+L3+9jTeW7eC9lbu57rSO3HVBDxvDMmEpv7jM0UkRwW4SNGGibbMY7r64J4v/dA4Thrbnha+2csO/08ktKnU6mjF1rjAI7vOw4mHCSny0m/tG9uaBUb35YmMWv3puEZkH7U52Ez5U1dttZcXDmDo3fkh7Zlw7iF2HCrj0WSsgJnwUl5VTVq6OriIIVjxMGDu9azJv3jSUwpIyrnslnSOFJU5HMqbWCos9y0TbmIcxAdS9VTzPjhvIpn253P7fbyk7xuJVxoSKYFiCFgJcPERkhIhsEJHNIjK5iv1PishK72OjiBzy2Vfms29OIHOa8HZ612Tuu6QX8zdk8eD/1jodx5haCYZVBCGAl+qKSAQwBfglkAksE5E5qnr0f6+q3uFz/G3AAJ+XKFDV8FjYwjjuqiHt2ZKVy8tfbyOhsZvbzu5ql/GakJRf7LmCMJy7rQYDm1U1Q1WLgZnAyGqOHwv8N4B5TAP3lwt7MrJ/G576dBNXPL+IjKxcpyMZ47fCBtBtlQLs9Hme6d32MyLSHugIfO6zOVpE0kVkiYiMOsZ5N3iPSc/Kyqqr3CZMRbiEp0b3559j+rMlK48Lnl7IS19tRdXGQUzoKPAOmNvVVh5jgNmqWuazrb2qpgG/Bp4Skc6VT1LVaaqapqppycm2mp85PhFhZP8UPr7jDIZ1TuL+D9by1/e+p9wG0k2IqOi2cnrMI5DFYxfQ1ud5qndbVcZQqctKVXd5/8wAvuCn4yHG1ErL+GhenJDGjWd24j9LdvDnd62AmNBQMWuC091WNRowF5FYPAPY5SJyEtAd+FBVq7twfhnQVUQ64ikaY/C0Iiq/dncgEVjssy0RyFfVIhFJAk4F/l7Dv5MxNSIiTB7RnQgRnv1iC6rKw5f2wWUD6SaI7T1cCECrhKrXvqkvNb3aagFwuveH+sd4CsNoYNyxTlDVUhG5FZgHRAAvqeoaEbkfSFfVistvxwAz9acdzz2AqSJSjqd19KjvVVrG1BURYdJ53Yh0CU9/vpm84jIeGNmLpjFRTkczpkp7DhWS0NgdMrPqiqrmi8hE4FlV/buIrDzeSao6F5hbadvdlZ7fW8V5iwBbocnUCxHh9+d2o5E7gic+2cjXm7OZfH53fjUw1VohJujsySmktcOtDqj5mIeIyFA8LY3/ebc52+FmTB275awufHDbaXRMiuX/Zq/myqmL2Zad53QsY35iT05BSBWP3wF3Ae94u546AfMDF8sYZ/RoHc+bNw7l75f3ZdO+XK6YuphNPxxxOpYxR+3NKaRVEKyYWaPioapfquolqvo3EXEB2ap6e4CzGeMIl0u4clBbZt80FIAx05awbs9hh1MZ47lBcH9eMW1CpeUhIq+LSLz3qqvvgbUiMimw0YxxVteWcbxxwxDcES7GTl/Cd5k5TkcyDdwP3iutWjcNkZYH0FNVDwOjgA/x3A0+PmCpjAkSnZKbMOvGocRGRfLrF5bw/S4rIMY5uw95i0eotDwAt4i48RSPOd77O+yOKtMgtGsew6ybhhIf7Wb8i0vZsNfGQIwz9h4uAEKreEwFtgGxwALvXFTWCWwajJSmjXn9+lOIinQx7oWlbLWrsIwDfmx5hEi3lao+raopqnqBemwHzgpwNmOCSvvmsbx23SmUqzJu+hJ27LelbU392ptTSNMYt+OTIkLNB8wTROSJihlsReRxPK0QYxqULi3ieHXiYHKLSjn78S+49uVvePfbXeR55xsyJpD25BTQKt75LiuoebfVS8AR4Erv4zDwcqBCGRPMerVJYM6tpzHx9I5s2HuE372xkrQHP+XN9J3HP9mYWtiTU0ibILjSCmo+PUlnVb3c5/l9NZmexJhw1SEplrvO78Efz+tO+vaDPPXpRibNXs0Phwu55awuiNi0Jqbu7ckppF/bpk7HAGre8igQkdMqnojIqUBBYCIZEzpcLmFwx2bMuHYwlw5I4R8fb+Sv731PmU3vbupYYUkZB4LkBkGoecvjJuDfIpLgfX4QmBCYSMaEnqhIF49f0Y8W8Y2Y+mUGew4V8tClfRyfNtuEj705FVOxB0e3VU2vtlqlqv2AvkBfVR0AnB3QZMaEGJdLuOv8Htx3SS8Wbs7mrH98wTOfbTq65rQxtbE7x9PZEywtD79WElTVw947zQF+H4A8xoS8CcM68Nnvz2R4t2Qe/2Qj5zz+JXO/22NrpZta+bHlEYLFoxIbETTmGNo2i+G5q07mv9cPIb6xm5tfW8G4F5ay0WboNSdoT07w3CAItSse9muUMccxtHNzPrjtNB4Y2Ys1uw9z/j8Xct/7aygotq4s4589OQVBc4MgHKd4iMgRETlcxeMI0KaeMhoT0iJcwvihHZj/h+GMGdSWGYu28avnF5F5sPo71FftPMTDc9fZmIkBPMvPBkurA45TPFQ1TlXjq3jEqaqzC+gaE2KaxUbx0KV9eGnCIHYcyOeSf33N4i37qzx2/oZ9jJm2hGkLMnj84w31nNQEo2BZfrZCbbqtjDEn4KzuLXjvllNJjHFz1YtLeerTjew88GMr5O0VmVz/SjqdkmMZ1b8NL3y1lSUZVRcZ03AEy/KzFaz1YIwDOiU34d1bTmXSm6t56tNNPPXpJnq2jqdH63jeWpHJsM7NmTr+ZCJcwsqdh7hz1io++t3pxEW7nY5uHFBYUsbB/JKgmZoErOVhjGPiot08P/5kFkw6iz9f0IOYqAje/jaTi/q25uVrBxEX7SYmKpInRvdnT04B97+/1unIxiEVV1oFy6SIYC0PYxzXrnkM15/RievP6ERRaRmNIn96Nc3AdoncPLwL/5q/mXN6tGRE71YOJTVO2eO9QbB10+ApHtbyMCaIVC4cFW4/pyt9UhK4442VLNqSXc+pjNP2BNEiUBUCWjxEZISIbBCRzSIyuYr9T4rISu9jo4gc8tk3QUQ2eR82j5Zp0KIiXbx87SDaNmvMb2YsY8MnL8KTveHepp4/V89yOqIJoL2Hg2ft8goB67YSkQhgCvBLIBNYJiJzVPVox62q3uFz/G3AAO/XzYB7gDQ8NyMu9557MFB5jQl2SU0a8d/rhzB9yt9o99UzIMWeHTk74f3bPV/3vdK5gCZgdh8qIDHGTbQ7OG4QhMC2PAYDm1U1Q1WLgZnAyGqOHwv81/v1ecAnqnrAWzA+AUYEMKsxIaF5k0ZMcr9B44rCUaGkAD6735lQJuD25gTXDYIQ2OKRAvgurZbp3fYzItIe6Ah87s+5InJDxdK4WVlZdRLamGAXcXhX1TtyMus3iKk3u4PsBkEIngHzMcBsVfVrHgZVnaaqaaqalpycHKBoxgSZhNQqN+sxtpvQtzenIKiutILAFo9dQFuf56nebVUZw49dVv6ea0zDcs7d4P5pF0a+RjEj+mqb9j0MFZV6bhBsEddwiscyoKuIdBSRKDwFYk7lg0SkO5AILPbZPA84V0QSRSQRONe7zRjT90q4+GlIaAsIJLRlQfe/ct/2Xny+fp/T6Uwd25/rGd9KatLI4SQ/FbCrrVS1VERuxfNDPwJ4SVXXiMj9QLqqVhSSMcBM9fmVSVUPiMgDeAoQwP2qeiBQWY0JOX2v/MmVVeeUldMh80sem7eBs7q1wOWy5XbCRXZuEQBJTaIcTvJTAb3DXFXnAnMrbbu70vN7j3HuS8BLAQtnTBhxR7i489xu3Pbfb5mzajejBlR5bYoJQUeLR1xwtTyCZcDcGFNLF/ZpTc/W8TzxyUaKS8udjmPqSPYRT7dVcpB1W1nxMCZMuFzCpBHd2HEgnzfSdx7/BBMSso52W1nxMMYEyPCTkhncoRlPf7aJ/OJSp+OYOpCdW0RsVETQLD9bwYqHMWFERPi/Ed3IOlLEox+up7zcLt0Nddm5xUE33gFWPIwJO2kdmnHNsA78e/F2bng1nSOFJU5HMrWQfaQo6LqswIqHMWHpnot7cv/IXszfkMWlzy5ia3ae05HMCcrOLQq6y3TBiocxYUlEuHpoB16dOJj9uUWM/NdXvJm+0+5AD0Ge4mEtD2NMPRrWOYk5t55G15ZxTJq9mjHTlrB5X67TsUwNlZaVczC/xIqHMab+tW0Ww5s3DuWRy/qwbs9hzv/nAv7+0XoO5Rcf/2TjqAN53qlJbMDcGOMEl0sYO7gdn905nIv6tuHZL7Zw2t/m89i89RzMsyISrCru8UgOwjGPgE5PYowJLslxjXhydH9uPLMTz3y2mWe/2MKMr7dxZrdkBrZL5OT2ifRqk0BUpP1eGQyyg3RSRLDiYUyD1L1VPFPGDWTjD0eYviCDxRn7mfvdXgBaxjfig9tOJzkIu0oamuwjwXl3OVjxMKZBO6llHI9d0Q+AHw4XsmhLNnfOWsXUL7fwl4t6OpzOBOukiGBjHsYYr5bx0Vw6IJVRA1L4z9Lt7DtS6HSkBi87t4hot4vYIJuaBKx4GGMquf3srpSUKc9/keF0lAYvO7eYpCaNEAm+9VmseBhjfqJDUiyXeVsfPxy21oeTgvUGQbDiYYypwm1nd6W8XHnuiy1OR2nQsoJ0Xiuw4mGMqUK75jFcPjCV17/Zwd4ca304xdNtFXz3eIAVD2PMMdx6dhfKy5VHPlxnc2I5oKxcOZBnLQ9jTIhp2yyGW87qwnsrd3PPnDVWQOrZwfxiypWgbXnYfR7GmGP63S+6kl9cyvSFW3GJcM/FPYPyyp9wFMz3eIAVD2NMNUSEP13Qg3KFF7/yFJC/XtTDCkg9yD4SvFOTgBUPY8xxiAh/ubAH5aq89PVW8opKefDS3rgjrNc7kI62PKx4GGNClYhw90U9adIokmc+38yuQwU8e9VA4qPdTkcLW9lHZ9QNzuJhvzoYY2pERLjz3G489qu+LMnYz+XPLiLzYL7TscJWVm4RUREu4hsH5+/4AS0eIjJCRDaIyGYRmXyMY64UkbUiskZEXvfZXiYiK72POYHMaYypuSvS2vLv3wxm7+FCRk1ZxPLtB52OFJayjxTTvElU0I4vBax4iEgEMAU4H+gJjBWRnpWO6QrcBZyqqr2A3/nsLlDV/t7HJYHKaaWbMe8AABI5SURBVIzx37AuSbxz8zBiG0UwdtoSZi/PdDpS2AnmqUkgsC2PwcBmVc1Q1WJgJjCy0jHXA1NU9SCAqu4LYB5jTB3q0iKOd28+lbQOifzhzVU8PHcdZeV2L0hd8RSP4LzHAwJbPFKAnT7PM73bfJ0EnCQiX4vIEhEZ4bMvWkTSvdtHVfUGInKD95j0rKysuk1vjDmuxNgoXvnNYK4e2p5pCzL4y7vfOx0pbAR7y8PpkZhIoCswHEgFFohIH1U9BLRX1V0i0gn4XES+U9WfzNKmqtOAaQBpaWn2K48xDnBHuLh/ZG8auyOYuiCD07smcUGf1k7HCmnl5cr+3OKgvUEQAtvy2AW09Xme6t3mKxOYo6olqroV2IinmKCqu7x/ZgBfAAMCmNUYU0t/OK8b/VITmPzWanYfKqj22NKycvbmFLI68xCfrfuBb7YeqKeUoSGnoITScg3qlkcgi8cyoKuIdBSRKGAMUPmqqXfxtDoQkSQ83VgZIpIoIo18tp8KrA1gVmNMLbkjXDw9dgBl5crv3lh5zPGPnQfyGfbo5wx55DMu+dfXTHwlnSunLua9lZV/t2y4frxBsAGOeahqKXArMA9YB8xS1TUicr+IVFw9NQ/YLyJrgfnAJFXdD/QA0kVklXf7o6pqxcOYINe+eSwPjOrNN1sP8Oz8zT/bX1pWzv+b+S0FxWU8MKo3069O491bTiWtfSJ/evs7MrJyHUgdfLKC/AZBCPCYh6rOBeZW2na3z9cK/N778D1mEdAnkNmMMYFx6YAUvtyYxVOfbaJN08ZcfnLq0X3PfL6ZFTsO8fTYAVzSr83R7U+PHcAFTy/klte/5Z2bhxHtDr41u+tTdq53XqsGOuZhjGmARIQHR/XmlI7NuPPNVfz9o/WUlyvLth3gmc83cdnAlJ8UDoA2TRvzxJX9WLfnMA98YJ0M2UeCe14rcP5qK2NMGIqLdvPKbwZz93trePaLLWzJyuX7XYdJTYzh/pG9qzzn7O4tufGMTkxdkMEpnZr/rMA0JNm5RUS4hKaNg3fuMCsexpiAcEe4ePjS3nROjuWhuetwiTD7pqE0aXTsHzt/OK8b6dsP8sfZq+mUFEvvlIR6TBw81u89QkrTxrhcwTk1CVi3lTEmgESE607vxOvXDWH61SczoF1itce7I1w8d9VAEmPcXP/vdPYdbnjrpx/MK2bBxixG9G7ldJRqWfEwxgTc0M7NObt7yxod2yIumukT0jiUX8INry6nsKQswOmCy9zv91BarkHfbWfFwxgTdHq1SeDJ0f1ZufMQf3xrdYNaP33Oyt10To6lV5t4p6NUy4qHMSYojejdiknndeO9lbt5bN4Gp+PUi92HCvhm2wEu6ZcStFOxV7ABc2NM0Lp5eGfPqoVfbCEu2s1vh3d2OlJAfbB6N6pwSf/g7rICKx7GmCAmIjwwsjd5RaX87aP1NImOZPyQ9k7HCpg5q3bTLzWBjkmxTkc5Luu2MsYEtQiX8I8r+nFO9xbc/d73vPNteC48tXmf516YS/pXXrkiOFnxMMYEPXeEiynjBjKkY3N+P2sVLyzMCLtB9DmrdiMCF/UNjensrXgYY0JCtDuCl64ZxIherXjwf+v4y7vfU1pW7nSsOqGqvL9qN0M7NadlfLTTcWrEiocxJmQ0jopgyq8HctOZnXlt6Q6unbGMw4UlTseqtZU7D7E1Oy/o7+3wZcXDGBNSXC5h8vnd+dvlfVi8ZT9/mLXK6Ui19p8lO4iNiuDCEOmyAisexpgQNXpQOyad142P1/7AvDV7nY5zwg7mFfPB6t1cOjCFuOjgnQixMisexpiQ9ZvTOtK9VRz3zllDblGp03FOyOzlmRSVlnNViF2CbPd5GGNCljvCxcOX9eHy5xbx+McbuOfiXgDkFZXy9OebWLH9IFGRLtwRLqIiXCQ0dtOsSRTNY6NoFtuIxBg3TWOiaBYbRbtmMUTU8yy25eXKf5ZuZ1CHRLq3Cu7pSCqz4mGMCWkD2yVy1SnteWXRNi4dkMLB/BL+9PZ37DpUQFr7RIpKyjlSWEpRSTk5BSUcyCumuIqrtIZ2as4rvxlMVGT9dcgs3JzN9v35/P6XJ9Xbe9YVKx7GmJA3aUQ35q3Zy/gXvyGnoITOybG8edNQBnVo9rNjVZW84jIO5BZzML+YA/nFrNmVwz8+3sg9c9bw8KW9621eqVcXbyepSVTQT79eFSsexpiQFx/t5oFRvbnjjZXcfnYXbj6ryzHXQRcRmjSKpEmjSNo1jwHgrG4tyCsu47kvttCzdRzjh3YIeOZdhwr4fP0P3HRmZxpFht6a7VY8jDFh4bxerVhz33kn3Gr4w7nd2LD3CPe9v5YuLeIY2rl5HSf8qdeXbkeBX5/SLqDvEyh2tZUxJmzUprspwiU8NaY/7ZvHcPNry9mSlVuHyX7qtaXbmbYgg1/2aElqYkzA3ieQrHgYY4xXfLSbFyYMIsIlXPH8Yr7LzKnT1y8uLedP73zHn9/5nmGdk3jsV/3q9PXrkxUPY4zx0TEpljdvGkZjdwRjpy9h8Zb9dfK6B/OKGffCEl5fuoObzuzMS9cMIiEmdG4KrCygxUNERojIBhHZLCKTj3HMlSKyVkTWiMjrPtsniMgm72NCIHMaY4yvjkmxvPXbYbROiGbCy9/UyR3s0xZmsGLHIf45pj+Tz+9e7/eU1LWAFQ8RiQCmAOcDPYGxItKz0jFdgbuAU1W1F/A77/ZmwD3AKcBg4B4RSQxUVmOMqaxVQjSzbhxKz9bx3PLaCuZv2Fer15u/fh+DOiQyMkTW6zieQLY8BgObVTVDVYuBmcDISsdcD0xR1YMAqlrxr3Me8ImqHvDu+wQYEcCsxhjzM4mxUbw6cTDdWsXx2/8sZ/n2Ayf0OntzClm/9wjDu7Wo44TOCWTxSAF2+jzP9G7zdRJwkoh8LSJLRGSEH+ciIjeISLqIpGdlZdVhdGOM8YiLdjPj2sG0io/m2peXsWHvEb9f48uNnt+Lzzwpua7jOcbpAfNIoCswHBgLTBeRpjU9WVWnqWqaqqYlJ4fPP4oxJrgkxzXi1Ymn0DgqgvEvLmXH/ny/zv9yYxat4qPp3iouQAnrXyCLxy6grc/zVO82X5nAHFUtUdWtwEY8xaQm5xpjTL1p2yyGf//mFIpKy7n02a9Ztq1mXVilZeUs3JTNmScl19u0J/UhkMVjGdBVRDqKSBQwBphT6Zh38bQ6EJEkPN1YGcA84FwRSfQOlJ/r3WaMMY7p1iqOt347jPjGbn49fQn//WbHcc9ZseMQRwpLObNbePWOBKx4qGopcCueH/rrgFmqukZE7heRS7yHzQP2i8haYD4wSVX3q+oB4AE8BWgZcL93mzHGOKpLiya8e/OpDO2cxF1vf8fd731PYUnZMY//cuM+IlzCqV2S6jFl4ImqOp2hTqSlpWl6errTMYwxDURZufLoh+uYvnArKU0b86cLenBBn1Y/65q68OmFxEZFMuumoQ4lrZ6ILFfVNH/Pc3rA3BhjQlKES/jzhT1544YhJDR2c8vrKxg9dQlrdx8+esy+I4Ws2X047LqswIqHMcbUyimdmvP+bafx8KV92JyVy8gpX/Hy11tRVRZszAbC6xLdCjYluzHG1FKES/j1Ke04v3crJs1exX3vr2Xxlv2UlJWTHNeIXm1Ca4nZmrDiYYwxdSQxNorpV6fx0tfbePTDdZSUKb86OTWsLtGtYMXDGGPqkIgw8bSOpLVP5JEP1zF2cGgu9nQ8VjyMMSYA+rVtyswbgvMKq7pgA+bGGGP8ZsXDGGOM36x4GGOM8ZsVD2OMMX6z4mGMMcZvVjyMMcb4zYqHMcYYv1nxMMYY47ewmZJdRLKA7UACkOOzy/d5xddVbUsCsv1828rvVdP91WU8Vmbfr2uTubpc1e0/3rZgzFzV9mPlrCqr7/5g/3zYZ9o+01U9r8nno72q+j9zo6qG1QOYdqznFV8fY1t6bd+rpvury3isfFXlP5HMJ5r7eNuCMbM/39tjZPU9Nqg/H/aZts90fXw+fB/h2G31fjXP369mW128V033V5ex8vPj5T8RJ5L7eNuCMXNV26v7t6+cNRgzV35un+mand9QPtOVn9f15+OosOm2qi0RSdcTWE3LSZa5/oRibstcP0IxM9Q+dzi2PE7UNKcDnADLXH9CMbdlrh+hmBlqmdtaHsYYY/xmLQ9jjDF+s+JhjDHGb1Y8jDHG+M2Kx3GIyOki8ryIvCAii5zOU1Mi4hKRh0TkGRGZ4HSemhCR4SKy0Pv9Hu50npoSkVgRSReRi5zOUlMi0sP7fZ4tIr91Ok9NiMgoEZkuIm+IyLlO56kJEekkIi+KyGyns1TH+xl+xfv9HVeTc8K6eIjISyKyT0S+r7R9hIhsEJHNIjK5utdQ1YWqehPwAfBKIPP65Kt1bmAkkAqUAJmByuqTrS4yK5ALRBM6mQH+CMwKTMqfq6PP9Trv5/pK4NRA5vVmq4vM76rq9cBNwOhA5vVmq4vMGao6MbBJq+Zn/suA2d7v7yU1eoPa3GEY7A/gDGAg8L3PtghgC9AJiAJWAT2BPngKhO+jhc95s4C4UMkNTAZu9J47O0Qyu7zntQReC5HMvwTGANcAF4XK58N7ziXAh8CvQyWz97zHgYEhljng/wdrmf8uoL/3mNdr8vqRhDFVXSAiHSptHgxsVtUMABGZCYxU1UeAKrsdRKQdkKOqRwIY96i6yC0imUCx92lZ4NJ61NX32usg0CgQOX3V0fd5OBCL5z9ggYjMVdXyYM/tfZ05wBwR+R/weuAS19n3WoBHgQ9VdUUg80Kdf6brnT/58bT0U4GV1LBHKqyLxzGkADt9nmcCpxznnInAywFLVDP+5n4beEZETgcWBDJYNfzKLCKXAecBTYF/BTbaMfmVWVX/DCAi1wDZgS4c1fD3ez0cT1dFI2BuQJMdm7+f6duAXwAJItJFVZ8PZLhj8Pf73Bx4CBggInd5i4yTjpX/aeBfInIhNZy+pCEWD7+p6j1OZ/CXqubjKXohQ1XfxlP0Qo6qznA6gz9U9QvgC4dj+EVVn8bzQy5kqOp+PGM0QU1V84Br/TknrAfMj2EX0Nbneap3W7ALxdyWuf6EYm7LXP/qLH9DLB7LgK4i0lFEovAMds5xOFNNhGJuy1x/QjG3Za5/dZe/vq8AqOerDf4L7OHHy1UnerdfAGzEc9XBn53OGQ65LbPltszB9Qh0fpsY0RhjjN8aYreVMcaYWrLiYYwxxm9WPIwxxvjNiocxxhi/WfEwxhjjNysexhhj/GbFw4Q1Ecmt5/erkzVfxLO2SY6IrBSR9SLyjxqcM0pEetbF+xtzPFY8jPGDiFQ7H5yqDqvDt1uoqv2BAcBFInK8dTdG4Znd15iAs+JhGhwR6SwiH4nIcvGsXNjdu/1iEVkqIt+KyKci0tK7/V4ReVVEvgZe9T5/SUS+EJEMEbnd57VzvX8O9+6f7W05vOadUhwRucC7bbmIPC0iH1SXV1UL8EyVneI9/3oRWSYiq0TkLRGJEZFheNbneMzbWul8rL+nMXXBiodpiKYBt6nqycAfgGe9278ChqjqAGAm8H8+5/QEfqGqY73Pu+OZPn4wcI+IuKt4nwHA77zndgJOFZFoYCpwvvf9k48XVkQSga78OLX+26o6SFX7AevwTDuxCM8cRZNUtb+qbqnm72lMrdmU7KZBEZEmwDDgTW9DAH5ceCoVeENEWuNZZW2rz6lzvC2ACv9T1SKgSET24Vn9sPLSud+oaqb3fVcCHfAss5uhqhWv/V/ghmPEPV1EVuEpHE+p6l7v9t4i8iCedU+aAPP8/HsaU2tWPExD4wIOeccSKnsGeEJV53gXS7rXZ19epWOLfL4uo+r/SzU5pjoLVfUiEekILBGRWaq6EpgBjFLVVd5FqIZXcW51f09jas26rUyDoqqHga0icgV4ljYVkX7e3Qn8uLbBhABF2AB08lkedPTxTvC2Uh4F/ujdFAfs8XaVjfM59Ih33/H+nsbUmhUPE+5iRCTT5/F7PD9wJ3q7hNbgWcMZPC2NN0VkOZAdiDDerq+bgY+873MEyKnBqc8DZ3iLzl+BpcDXwHqfY2YCk7wD/p059t/TmFqzKdmNqWci0kRVc71XX00BNqnqk07nMsYf1vIwpv5d7x1AX4Onq2yqw3mM8Zu1PIwxxvjNWh7GGGP8ZsXDGGOM36x4GGOM8ZsVD2OMMX6z4mGMMcZvVjyMMcb47f8DA9PuHtw1ae4AAAAASUVORK5CYII=%0A">
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Pasamos ahora a entrenar nuestro modelo.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: left;">
+      <th>epoch</th>
+      <th>train_loss</th>
+      <th>valid_loss</th>
+      <th>accuracy</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>0.350504</td>
+      <td>0.331476</td>
+      <td>0.843827</td>
+      <td>00:05</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>0.322696</td>
+      <td>0.321616</td>
+      <td>0.847205</td>
+      <td>00:05</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>0.330329</td>
+      <td>0.316916</td>
+      <td>0.848894</td>
+      <td>00:05</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>0.317356</td>
+      <td>0.321670</td>
+      <td>0.846898</td>
+      <td>00:05</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>0.322257</td>
+      <td>0.316217</td>
+      <td>0.851198</td>
+      <td>00:05</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td>0.322551</td>
+      <td>0.320621</td>
+      <td>0.848587</td>
+      <td>00:05</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>0.318757</td>
+      <td>0.318485</td>
+      <td>0.851812</td>
+      <td>00:05</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>0.325365</td>
+      <td>0.320952</td>
+      <td>0.849048</td>
+      <td>00:05</td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td>0.305683</td>
+      <td>0.318356</td>
+      <td>0.852273</td>
+      <td>00:05</td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td>0.308657</td>
+      <td>0.320151</td>
+      <td>0.850276</td>
+      <td>00:05</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Evaluación">
+<a class="anchor" href="#Evaluaci%C3%B3n" aria-hidden="true"><span class="octicon octicon-link"></span></a>Evaluación<a class="anchor-link" href="#Evaluaci%C3%B3n"> </a>
+</h2>
+<p>Hemos logrado una accuracy del 84.50 en el conjunto de validación, pero nos interesa ver el rendimiento de nuestro modelo en el conjunto de test. Para ello debemos primero combinar el conjunto de train y el conjunto de test para crear un dataloader en el que el conjunto de validación esté formado por todos los elementos del conjunto de test.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dfAll</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">df_train</span><span class="p">,</span><span class="n">df_test</span><span class="p">])</span>
+<span class="n">dlsTest</span> <span class="o">=</span> <span class="n">TabularDataLoaders</span><span class="o">.</span><span class="n">from_df</span><span class="p">(</span><span class="n">dfAll</span><span class="p">,</span><span class="s1">'.'</span><span class="p">,</span><span class="n">procs</span><span class="o">=</span><span class="n">procs</span><span class="p">,</span>
+                                <span class="n">cat_names</span><span class="o">=</span><span class="n">cat</span><span class="p">,</span><span class="n">cont_names</span><span class="o">=</span><span class="n">cont</span><span class="p">,</span><span class="n">y_names</span><span class="o">=</span><span class="s1">'income'</span><span class="p">,</span>
+                                <span class="n">valid_idx</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_train</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">dfAll</span><span class="p">))),</span><span class="n">bs</span><span class="o">=</span><span class="mi">64</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Cambiamos ahora el dataloader del learner.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">dls</span><span class="o">=</span><span class="n">dlsTest</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Y procedemos a obtener la accuracy de nuestro modelo en el conjunto de test.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(#2) [0.3215624988079071,0.8495700359344482]</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>También podemos usar nuestro modelo para hacer predicciones concretas con un ejemplo usando la función <code>predict</code> esto nos devolverá tres elementos: los datos sobre los que se ha realizado la predicción, la clase, y las probabilidades.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">learn</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">df_test</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+
+<style>
+    /* Turns off some styling */
+    progress {
+        /* gets rid of default border in Firefox and Opera. */
+        border: none;
+        /* Needs to be in here for Safari polyfill so background images work as expected. */
+        background-size: auto;
+    }
+    .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
+        background: #F44336;
+    }
+</style>
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+
+</div>
+
+</div>
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(   workclass  education  marital-status  occupation  relationship  race  sex  \
+ 0        5.0        2.0             5.0         8.0           4.0   3.0  2.0   
+ 
+    native-country       age    fnlwgt  education-num  capital-gain  \
+ 0            40.0 -0.995675  0.350768      -1.197414     -0.145918   
+ 
+    capital-loss  hours-per-week  income  
+ 0     -0.216656       -0.035429     0.0  ,
+ tensor(0),
+ tensor([0.9983, 0.0017]))</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+</div>
+
+
+
+  </div><!-- from https://github.com/utterance/utterances -->
+<script src="https://utteranc.es/client.js"
+        repo="AP2122/aprendizajeprofundo2122"
+        issue-term="title"
+        label="blogpost-comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script><a class="u-url" href="/aprendizajeprofundo2122/practica/2022/03/14/practica5-datos-estructurados.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/aprendizajeprofundo2122/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/aprendizajeprofundo2122/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/aprendizajeprofundo2122/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>Página del curso.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/joheras" target="_blank" title="joheras"><svg class="svg-icon grey"><use xlink:href="/aprendizajeprofundo2122/assets/minima-social-icons.svg#github"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
